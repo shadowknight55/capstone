@@ -52,11 +52,51 @@ const handler = NextAuth({
     signIn: '/',
   },
   callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.role = user.role;
+      } else if (!token.role && token.email) {
+        // Fetch role from DB if not present
+        const client = await clientPromise;
+        const usersCollection = client.db("school_portal").collection("users");
+        const dbUser = await usersCollection.findOne({ email: token.email });
+        if (dbUser) token.role = dbUser.role;
+      }
+      return token;
+    },
     async session({ session, token }) {
       if (session?.user) {
         session.user.id = token.sub;
+        session.user.role = token.role;
       }
       return session;
+    },
+    async signIn({ user, account, profile, email, credentials }) {
+      // Only for Google sign-in
+      if (account?.provider === 'google') {
+        const client = await clientPromise;
+        const usersCollection = client.db("school_portal").collection("users");
+        let dbUser = await usersCollection.findOne({ email: user.email });
+        if (!dbUser) {
+          // Get role from localStorage via query param (not available server-side), fallback to 'student'
+          let role = 'student';
+          if (typeof window !== 'undefined') {
+            role = localStorage.getItem('pendingRole') || 'student';
+            localStorage.removeItem('pendingRole');
+          } else if (profile?.hd === 'teacher.com') {
+            // Optionally, use Google domain for teachers
+            role = 'teacher';
+          }
+          await usersCollection.insertOne({
+            name: user.name,
+            email: user.email,
+            role,
+            createdAt: new Date(),
+            provider: 'google',
+          });
+        }
+      }
+      return true;
     },
   },
 });
