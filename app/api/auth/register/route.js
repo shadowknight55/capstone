@@ -4,9 +4,9 @@ import clientPromise from '@/lib/mongodb';
 
 export async function POST(req) {
   try {
-    const { name, email, password } = await req.json();
+    const { name, email, password, role } = await req.json();
 
-    if (!name || !email || !password) {
+    if (!name || !email || !password || !role) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
@@ -33,6 +33,7 @@ export async function POST(req) {
       name,
       email,
       password: hashedPassword,
+      role,
       createdAt: new Date(),
     });
 
