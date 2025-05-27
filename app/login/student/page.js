@@ -5,21 +5,36 @@ import { signIn } from 'next-auth/react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
+function LoadingScreen({ message = "Loading..." }) {
+  return (
+    <div className="min-h-screen flex flex-col items-center justify-center bg-teal-50">
+      <svg className="animate-spin h-12 w-12 text-teal-600 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+      </svg>
+      <div className="text-teal-700 text-xl font-semibold">{message}</div>
+    </div>
+  );
+}
+
 export default function StudentLogin() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [isLogin, setIsLogin] = useState(true);
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     if (isLogin) {
       const result = await signIn('credentials', {
         email,
         password,
         redirect: false,
       });
+      setLoading(false);
       if (result?.ok) {
         window.location.href = '/student/polypad';
       }
@@ -29,6 +44,7 @@ export default function StudentLogin() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, email, password, role: 'student' }),
       });
+      setLoading(false);
       if (res.ok) {
         setIsLogin(true);
       }
@@ -39,6 +55,8 @@ export default function StudentLogin() {
     localStorage.setItem('pendingRole', 'student');
     signIn('google', { callbackUrl: '/student/polypad' });
   };
+
+  if (loading) return <LoadingScreen message="Processing..." />;
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-teal-50 to-white">
