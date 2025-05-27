@@ -36,7 +36,7 @@ export default function TeacherLogin() {
       });
       setLoading(false);
       if (result?.ok) {
-        window.location.href = '/teacher/polypad';
+        window.location.href = '/teacher/dashboard';
       }
     } else {
       const res = await fetch('/api/auth/register', {
@@ -53,7 +53,7 @@ export default function TeacherLogin() {
 
   const handleGoogleSignIn = () => {
     localStorage.setItem('pendingRole', 'teacher');
-    signIn('google', { callbackUrl: '/teacher/polypad' });
+    signIn('google', { callbackUrl: '/teacher/dashboard' });
   };
 
   if (loading) return <LoadingScreen message="Processing..." />;
