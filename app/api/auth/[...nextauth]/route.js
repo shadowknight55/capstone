@@ -54,19 +54,23 @@ const handler = NextAuth({
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
+        token.id = user.id;
         token.role = user.role;
       } else if (!token.role && token.email) {
         // Fetch role from DB if not present
         const client = await clientPromise;
         const usersCollection = client.db("school_portal").collection("users");
         const dbUser = await usersCollection.findOne({ email: token.email });
-        if (dbUser) token.role = dbUser.role;
+        if (dbUser) {
+          token.role = dbUser.role;
+          token.id = dbUser._id.toString();
+        }
       }
       return token;
     },
     async session({ session, token }) {
       if (session?.user) {
-        session.user.id = token.sub;
+        session.user.id = token.id;
         session.user.role = token.role;
       }
       return session;
@@ -87,13 +91,18 @@ const handler = NextAuth({
             // Optionally, use Google domain for teachers
             role = 'teacher';
           }
-          await usersCollection.insertOne({
+          const result = await usersCollection.insertOne({
             name: user.name,
             email: user.email,
             role,
             createdAt: new Date(),
             provider: 'google',
           });
+          // Set the user ID in the user object
+          user.id = result.insertedId.toString();
+        } else {
+          // Set the user ID for existing users
+          user.id = dbUser._id.toString();
         }
       }
       return true;
