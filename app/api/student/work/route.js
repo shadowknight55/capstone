@@ -11,7 +11,7 @@ export async function GET(req) {
   }
 
   const client = await clientPromise;
-  const workCollection = client.db('school_portal').collection('student_work');
+  const workCollection = client.db('school_portal').collection('saved_work');
   
   const work = await workCollection.find({ 
     studentId: new ObjectId(studentId) 
@@ -28,7 +28,7 @@ export async function POST(req) {
   }
 
   const client = await clientPromise;
-  const workCollection = client.db('school_portal').collection('student_work');
+  const workCollection = client.db('school_portal').collection('saved_work');
   
   const result = await workCollection.insertOne({
     studentId: new ObjectId(studentId),
@@ -64,7 +64,7 @@ export async function DELETE(req) {
   }
 
   const client = await clientPromise;
-  const workCollection = client.db('school_portal').collection('student_work');
+  const workCollection = client.db('school_portal').collection('saved_work');
   
   // Delete the work only if it belongs to the student
   const result = await workCollection.deleteOne({
