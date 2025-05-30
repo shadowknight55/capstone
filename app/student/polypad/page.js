@@ -17,6 +17,7 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import html2canvas from 'html2canvas';
+import AIChatbot from '../../components/AIChatbot';
 
 /** Polypad API key for authentication */
 const POLYPAD_API_KEY = process.env.NEXT_PUBLIC_POLYPAD_API_KEY;
@@ -322,6 +323,9 @@ export default function StudentPolypad() {
           </div>
         </div>
       )}
+
+      {/* Add AI Chatbot */}
+      <AIChatbot />
     </div>
   );
 } 

@@ -79,17 +79,17 @@ export default function AIChatbot() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          messages: [...messages, { role: 'user', content: userMessage }],
-          context: 'You are a helpful assistant for students using Polypad, a digital mathematics workspace. Help them understand how to use Polypad features, explain mathematical concepts, and guide them through their work. Be friendly and encouraging.'
+          messages: [...messages, { role: 'user', content: userMessage }]
         }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to get response');
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to get response');
       }
 
       const data = await response.json();
-      setMessages(prev => [...prev, { role: 'assistant', content: data.message }]);
+      setMessages(prev => [...prev, { role: 'assistant', content: data.content }]);
     } catch (error) {
       console.error('Error:', error);
       setMessages(prev => [...prev, {
