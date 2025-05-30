@@ -1,3 +1,16 @@
+/**
+ * @file Teacher Dashboard Page Component
+ * @description Main dashboard interface for teachers to manage students, cohorts, and view student work.
+ * Provides functionality for cohort management, student assignment, and work review.
+ * 
+ * Features:
+ * - Student management
+ * - Cohort creation and management
+ * - Student-cohort assignment
+ * - Student work review
+ * - Session management
+ */
+
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -5,6 +18,16 @@ import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 
+/**
+ * LoadingScreen Component
+ * @component
+ * @description Displays a loading spinner with a customizable message while operations are in progress.
+ * Uses green theme colors consistent with teacher interface.
+ * 
+ * @param {Object} props - Component props
+ * @param {string} [props.message="Loading..."] - The message to display below the spinner
+ * @returns {JSX.Element} A loading screen component with spinner and message
+ */
 function LoadingScreen({ message = "Loading..." }) {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-green-50">
@@ -17,6 +40,34 @@ function LoadingScreen({ message = "Loading..." }) {
   );
 }
 
+/**
+ * TeacherDashboard Component
+ * @component
+ * @description Main dashboard component for teachers to manage their classroom.
+ * Handles student and cohort management, as well as viewing student work.
+ * 
+ * Features:
+ * - Student list management
+ * - Cohort creation and deletion
+ * - Student-cohort assignment
+ * - Student work review by cohort
+ * - Session-based authentication
+ * 
+ * State Management:
+ * - session: User session data
+ * - students: List of all students
+ * - cohorts: List of all cohorts
+ * - newCohort: New cohort name input
+ * - selectedCohort: Currently selected cohort for student assignment
+ * - selectedStudent: Currently selected student for cohort assignment
+ * - loading: Loading state for async operations
+ * - studentMap: Map of student IDs to student objects
+ * - selectedCohortForWork: Currently selected cohort for work review
+ * - cohortWork: Work data for selected cohort
+ * - loadingWork: Loading state for work fetching
+ * 
+ * @returns {JSX.Element} The teacher dashboard component
+ */
 export default function TeacherDashboard() {
   const { data: session, status } = useSession();
   const router = useRouter();
@@ -31,6 +82,16 @@ export default function TeacherDashboard() {
   const [cohortWork, setCohortWork] = useState(null);
   const [loadingWork, setLoadingWork] = useState(false);
 
+  /**
+   * Fetches initial data for students and cohorts
+   * @async
+   * @returns {Promise<void>}
+   * 
+   * Fetches:
+   * - List of all students
+   * - List of all cohorts
+   * Creates a map of student IDs to student objects for quick lookup
+   */
   const fetchData = async () => {
     setLoading(true);
     const studentsRes = await fetch('/api/teacher/students');
@@ -47,6 +108,11 @@ export default function TeacherDashboard() {
     setLoading(false);
   };
 
+  /**
+   * Effect hook for authentication and data initialization
+   * - Checks user session and role
+   * - Fetches initial data if authenticated
+   */
   useEffect(() => {
     if (status === 'loading') return;
     if (!session) {
@@ -60,6 +126,12 @@ export default function TeacherDashboard() {
     fetchData();
   }, [session, status, router]);
 
+  /**
+   * Creates a new cohort
+   * @async
+   * @param {Event} e - Form submission event
+   * @returns {Promise<void>}
+   */
   const handleCreateCohort = async (e) => {
     e.preventDefault();
     if (!newCohort) return;
@@ -73,6 +145,12 @@ export default function TeacherDashboard() {
     await fetchData();
   };
 
+  /**
+   * Adds a student to a cohort
+   * @async
+   * @param {Event} e - Form submission event
+   * @returns {Promise<void>}
+   */
   const handleAddStudentToCohort = async (e) => {
     e.preventDefault();
     if (!selectedCohort || !selectedStudent) return;
@@ -86,6 +164,12 @@ export default function TeacherDashboard() {
     await fetchData();
   };
 
+  /**
+   * Removes a cohort
+   * @async
+   * @param {string} cohortId - ID of the cohort to remove
+   * @returns {Promise<void>}
+   */
   const handleRemoveCohort = async (cohortId) => {
     setLoading(true);
     await fetch('/api/teacher/cohorts/remove', {
@@ -96,6 +180,13 @@ export default function TeacherDashboard() {
     await fetchData();
   };
 
+  /**
+   * Removes a student from a cohort
+   * @async
+   * @param {string} cohortId - ID of the cohort
+   * @param {string} studentId - ID of the student to remove
+   * @returns {Promise<void>}
+   */
   const handleRemoveStudentFromCohort = async (cohortId, studentId) => {
     setLoading(true);
     await fetch('/api/teacher/cohorts/remove-student', {
@@ -106,6 +197,14 @@ export default function TeacherDashboard() {
     await fetchData();
   };
 
+  /**
+   * Fetches work submitted by students in a cohort
+   * @async
+   * @param {string} cohortId - ID of the cohort to fetch work for
+   * @returns {Promise<void>}
+   * 
+   * @throws {Error} If fetching fails, shows error message to user
+   */
   const fetchCohortWork = async (cohortId) => {
     if (!cohortId) {
       setCohortWork(null);
@@ -128,6 +227,10 @@ export default function TeacherDashboard() {
     }
   };
 
+  /**
+   * Effect hook for fetching cohort work
+   * Triggers when selectedCohortForWork changes
+   */
   useEffect(() => {
     if (selectedCohortForWork) {
       fetchCohortWork(selectedCohortForWork);

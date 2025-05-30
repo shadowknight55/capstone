@@ -1,9 +1,16 @@
+/**
+ * @file Student Dashboard Page Component
+ * @description Main dashboard for students to view their cohorts, work, and access Polypad.
+ * Includes an AI assistant for Polypad help.
+ */
+
 'use client';
 
 import { useEffect, useState } from 'react';
 import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import AIChatbot from '../components/AIChatbot';
 
 function LoadingScreen({ message = "Loading..." }) {
   return (
@@ -17,6 +24,29 @@ function LoadingScreen({ message = "Loading..." }) {
   );
 }
 
+/**
+ * StudentHome Component
+ * @component
+ * @description Main dashboard component for students.
+ * 
+ * Features:
+ * - Cohort management
+ * - Work history
+ * - Polypad access
+ * - AI assistant integration
+ * 
+ * State Management:
+ * - session: User session data
+ * - cohorts: List of student's cohorts
+ * - studentWork: List of student's saved work
+ * - loading: Loading state for async operations
+ * - showWorkModal: Modal visibility state
+ * - selectedWork: Currently selected work for modal
+ * - showDeleteConfirm: Delete confirmation modal state
+ * - workToDelete: Work to be deleted
+ * 
+ * @returns {JSX.Element} The student dashboard component
+ */
 export default function StudentHome() {
   const { data: session, status } = useSession();
   const router = useRouter();
@@ -259,6 +289,9 @@ export default function StudentHome() {
           </div>
         </div>
       )}
+
+      {/* Add AI Chatbot */}
+      <AIChatbot />
     </div>
   );
 } 

@@ -1,3 +1,10 @@
+/**
+ * @file Teacher Login Page Component
+ * @description Handles teacher authentication including both traditional email/password login
+ * and Google OAuth sign-in. Provides functionality for both new teacher registration and
+ * existing teacher login.
+ */
+
 'use client';
 
 import { useState } from 'react';
@@ -5,6 +12,16 @@ import { signIn } from 'next-auth/react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
+/**
+ * LoadingScreen Component
+ * @component
+ * @description Displays a loading spinner with a customizable message while authentication
+ * operations are in progress. Uses green theme colors to differentiate from student loading screen.
+ * 
+ * @param {Object} props - Component props
+ * @param {string} [props.message="Loading..."] - The message to display below the spinner
+ * @returns {JSX.Element} A loading screen component with spinner and message
+ */
 function LoadingScreen({ message = "Loading..." }) {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-green-50">
@@ -17,6 +34,30 @@ function LoadingScreen({ message = "Loading..." }) {
   );
 }
 
+/**
+ * TeacherLogin Component
+ * @component
+ * @description Main teacher authentication component that handles both login and registration.
+ * Provides a form for email/password authentication and Google OAuth sign-in option.
+ * Uses a green color scheme to differentiate from student interface.
+ * 
+ * Features:
+ * - Toggle between login and registration modes
+ * - Email/password authentication
+ * - Google OAuth integration
+ * - Form validation
+ * - Loading states
+ * - Responsive design with green theme
+ * 
+ * State Management:
+ * - email: Teacher's email address
+ * - password: Teacher's password
+ * - name: Teacher's full name (for registration)
+ * - isLogin: Toggle between login/register modes
+ * - loading: Loading state for async operations
+ * 
+ * @returns {JSX.Element} A form component for teacher authentication
+ */
 export default function TeacherLogin() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -25,6 +66,15 @@ export default function TeacherLogin() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
+  /**
+   * Handles form submission for both login and registration
+   * @async
+   * @param {Event} e - Form submission event
+   * @returns {Promise<void>}
+   * 
+   * On successful login, redirects to teacher dashboard
+   * On successful registration, switches to login mode
+   */
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -51,6 +101,11 @@ export default function TeacherLogin() {
     }
   };
 
+  /**
+   * Initiates Google OAuth sign-in process for teachers
+   * Stores the pending role in localStorage for post-authentication handling
+   * Redirects to teacher dashboard on successful authentication
+   */
   const handleGoogleSignIn = () => {
     localStorage.setItem('pendingRole', 'teacher');
     signIn('google', { callbackUrl: '/teacher/dashboard' });

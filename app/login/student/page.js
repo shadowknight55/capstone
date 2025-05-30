@@ -1,3 +1,10 @@
+/**
+ * @file Student Login Page Component
+ * @description Handles student authentication including both traditional email/password login
+ * and Google OAuth sign-in. Provides functionality for both new user registration and
+ * existing user login.
+ */
+
 'use client';
 
 import { useState } from 'react';
@@ -5,6 +12,16 @@ import { signIn } from 'next-auth/react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
+/**
+ * LoadingScreen Component
+ * @component
+ * @description Displays a loading spinner with a customizable message while authentication
+ * operations are in progress.
+ * 
+ * @param {Object} props - Component props
+ * @param {string} [props.message="Loading..."] - The message to display below the spinner
+ * @returns {JSX.Element} A loading screen component with spinner and message
+ */
 function LoadingScreen({ message = "Loading..." }) {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-teal-50">
@@ -17,6 +34,29 @@ function LoadingScreen({ message = "Loading..." }) {
   );
 }
 
+/**
+ * StudentLogin Component
+ * @component
+ * @description Main student authentication component that handles both login and registration.
+ * Provides a form for email/password authentication and Google OAuth sign-in option.
+ * 
+ * Features:
+ * - Toggle between login and registration modes
+ * - Email/password authentication
+ * - Google OAuth integration
+ * - Form validation
+ * - Loading states
+ * - Responsive design
+ * 
+ * State Management:
+ * - email: User's email address
+ * - password: User's password
+ * - name: User's full name (for registration)
+ * - isLogin: Toggle between login/register modes
+ * - loading: Loading state for async operations
+ * 
+ * @returns {JSX.Element} A form component for student authentication
+ */
 export default function StudentLogin() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -25,6 +65,12 @@ export default function StudentLogin() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
+  /**
+   * Handles form submission for both login and registration
+   * @async
+   * @param {Event} e - Form submission event
+   * @returns {Promise<void>}
+   */
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -51,6 +97,10 @@ export default function StudentLogin() {
     }
   };
 
+  /**
+   * Initiates Google OAuth sign-in process
+   * Stores the pending role in localStorage for post-authentication handling
+   */
   const handleGoogleSignIn = () => {
     localStorage.setItem('pendingRole', 'student');
     signIn('google', { callbackUrl: '/student/polypad' });

@@ -1,3 +1,15 @@
+/**
+ * @file Student Polypad Page Component
+ * @description Interactive mathematics workspace for students using the Polypad API.
+ * Allows students to create, manipulate, and save mathematical work within their assigned cohorts.
+ * 
+ * Features:
+ * - Interactive Polypad mathematics workspace
+ * - Work saving with screenshots
+ * - Cohort-based organization
+ * - Session management and authentication
+ */
+
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
@@ -6,8 +18,19 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import html2canvas from 'html2canvas';
 
+/** Polypad API key for authentication */
 const POLYPAD_API_KEY = 'QDgLiYpFOg9QfBR435gysA';
 
+/**
+ * LoadingScreen Component
+ * @component
+ * @description Displays a loading spinner with a customizable message while operations are in progress.
+ * Uses teal theme colors consistent with student interface.
+ * 
+ * @param {Object} props - Component props
+ * @param {string} [props.message="Loading..."] - The message to display below the spinner
+ * @returns {JSX.Element} A loading screen component with spinner and message
+ */
 function LoadingScreen({ message = "Loading..." }) {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-teal-50">
@@ -20,6 +43,32 @@ function LoadingScreen({ message = "Loading..." }) {
   );
 }
 
+/**
+ * StudentPolypad Component
+ * @component
+ * @description Main component for the student Polypad workspace. Handles initialization,
+ * authentication, cohort management, and work saving functionality.
+ * 
+ * Features:
+ * - Polypad workspace integration
+ * - Session-based authentication
+ * - Cohort management
+ * - Work saving with screenshots
+ * - Modal-based save interface
+ * 
+ * State Management:
+ * - session: User session data
+ * - polypadLoaded: Polypad API loading state
+ * - currentCohort: Currently selected cohort
+ * - savingWork: Work saving operation state
+ * - workTitle: Title of the work being saved
+ * - workDescription: Description of the work being saved
+ * - showSaveModal: Modal visibility state
+ * - cohorts: List of available cohorts
+ * - selectedCohortId: Currently selected cohort ID
+ * 
+ * @returns {JSX.Element} The Polypad workspace component
+ */
 export default function StudentPolypad() {
   const { data: session, status } = useSession();
   const router = useRouter();
@@ -33,6 +82,12 @@ export default function StudentPolypad() {
   const [cohorts, setCohorts] = useState([]);
   const [selectedCohortId, setSelectedCohortId] = useState('');
 
+  /**
+   * Effect hook for authentication and initialization
+   * - Checks user session and role
+   * - Fetches student's cohorts
+   * - Loads Polypad API script
+   */
   useEffect(() => {
     if (status === 'loading') return;
     if (!session) {
@@ -96,6 +151,10 @@ export default function StudentPolypad() {
     }
   }, [session, status, router]);
 
+  /**
+   * Effect hook for Polypad initialization
+   * Creates a new Polypad instance when the API is loaded
+   */
   useEffect(() => {
     if (polypadLoaded && window.Polypad && polypadRef.current) {
       polypadRef.current.innerHTML = '';
@@ -103,6 +162,18 @@ export default function StudentPolypad() {
     }
   }, [polypadLoaded]);
 
+  /**
+   * Handles saving the current Polypad work
+   * @async
+   * @returns {Promise<void>}
+   * 
+   * Process:
+   * 1. Captures screenshot of current Polypad state
+   * 2. Saves work metadata and screenshot to database
+   * 3. Updates UI state and shows success message
+   * 
+   * @throws {Error} If saving fails, shows error message to user
+   */
   const handleSaveWork = async () => {
     if (!workTitle || !polypadRef.current) return;
     

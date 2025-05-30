@@ -1,9 +1,31 @@
+/**
+ * @file Home Page Component
+ * @description The landing page for the School Portal application. Provides navigation options
+ * for students and teachers to access their respective login pages.
+ * 
+ * This component serves as the main entry point for users, offering a clean and intuitive
+ * interface with two distinct paths for student and teacher authentication.
+ */
+
 'use client';
 
 import { useState } from 'react';
 import { signIn } from 'next-auth/react';
 import Image from 'next/image';
 
+/**
+ * Home Component
+ * @component
+ * @description Renders the main landing page with navigation buttons for student and teacher login.
+ * 
+ * Features:
+ * - Responsive design with gradient background
+ * - Clear visual hierarchy with prominent headings
+ * - Interactive buttons with hover effects
+ * - Separate paths for student and teacher authentication
+ * 
+ * @returns {JSX.Element} A React component that displays the landing page
+ */
 export default function Home() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-teal-50 to-white">
