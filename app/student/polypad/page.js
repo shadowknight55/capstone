@@ -19,7 +19,7 @@ import Link from 'next/link';
 import html2canvas from 'html2canvas';
 
 /** Polypad API key for authentication */
-const POLYPAD_API_KEY = 'QDgLiYpFOg9QfBR435gysA';
+const POLYPAD_API_KEY = process.env.NEXT_PUBLIC_POLYPAD_API_KEY;
 
 /**
  * LoadingScreen Component
@@ -139,7 +139,7 @@ export default function StudentPolypad() {
     // Load polypad script
     if (!window.Polypad) {
       const script = document.createElement('script');
-      script.src = `https://polypad.amplify.com/api/latest/polypad.js?lang=en&apiKey=${POLYPAD_API_KEY}`;
+      script.src = `https://polypad.amplify.com/api/latest/polypad.js?lang=en&apiKey=${process.env.NEXT_PUBLIC_POLYPAD_API_KEY}`;
       script.async = true;
       script.onload = () => setPolypadLoaded(true);
       document.body.appendChild(script);
