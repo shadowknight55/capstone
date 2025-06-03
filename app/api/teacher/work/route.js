@@ -26,7 +26,7 @@ export async function GET(req) {
     }
 
     // Get all student work for this cohort
-    const work = await db.collection('student_work')
+    const work = await db.collection('saved_work')
       .find({ cohortId: new ObjectId(cohortId) })
       .sort({ createdAt: -1 }) // Most recent first
       .toArray();

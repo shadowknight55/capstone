@@ -1,79 +1,100 @@
-import { NextResponse } from 'next/server';
-import OpenAI from 'openai';
+import { createConversation, sendMessage, getConversationHistory } from '@/lib/playlab';
 
-// Initialize OpenAI client with API key from environment variable
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
-export async function POST(req) {
+export async function POST(request) {
   try {
-    // Log the request (excluding sensitive data)
-    console.log('Received chat request');
+    const { action, conversationId, message } = await request.json();
 
-    const { messages } = await req.json();
-    console.log('Parsed messages:', messages?.length ? `${messages.length} messages` : 'no messages');
-
-    if (!messages || !Array.isArray(messages)) {
-      console.error('Invalid messages format:', messages);
-      return NextResponse.json(
-        { error: 'Messages are required and must be an array' },
+    // Validate required fields based on action
+    if (action === 'send' && (!conversationId || !message)) {
+      return Response.json(
+        { error: 'Missing required fields: conversationId and message are required for send action' },
         { status: 400 }
       );
     }
 
-    // Validate that the API key is set
-    if (!process.env.OPENAI_API_KEY) {
-      console.error('OpenAI API key is not configured');
-      return NextResponse.json(
-        { error: 'OpenAI API key is not configured' },
-        { status: 500 }
+    if (action === 'history' && !conversationId) {
+      return Response.json(
+        { error: 'Missing required field: conversationId is required for history action' },
+        { status: 400 }
       );
     }
 
-    console.log('Making OpenAI API request...');
-    const completion = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
-      messages: [
-        {
-          role: "system",
-          content: "You are a helpful AI assistant for students learning mathematics using Polypad. You can help explain mathematical concepts, guide students through problems, and provide interactive learning support. Always be encouraging and explain concepts clearly."
-        },
-        ...messages
-      ],
-      temperature: 0.7,
-      max_tokens: 500,
-    });
+    switch (action) {
+      case 'create': {
+        try {
+          const id = await createConversation();
+          return Response.json({ conversationId: id });
+        } catch (error) {
+          console.error('Error creating conversation:', error);
+          return Response.json(
+            { error: error.message || 'Failed to create conversation' },
+            { status: 500 }
+          );
+        }
+      }
 
-    console.log('Received response from OpenAI');
-    return NextResponse.json(completion.choices[0].message);
+      case 'send': {
+        try {
+          // Create a TransformStream to handle the streaming response
+          const encoder = new TextEncoder();
+          const stream = new TransformStream();
+          const writer = stream.writable.getWriter();
+
+          // Start the message stream in the background
+          sendMessage(conversationId, message)
+            .then(async (response) => {
+              try {
+                await writer.write(encoder.encode(JSON.stringify(response)));
+                await writer.close();
+              } catch (error) {
+                console.error('Error writing to stream:', error);
+                await writer.abort(error);
+              }
+            })
+            .catch(async (error) => {
+              console.error('Error in message stream:', error);
+              await writer.abort(error);
+            });
+
+          // Return the stream as the response
+          return new Response(stream.readable, {
+            headers: {
+              'Content-Type': 'application/json',
+              'Transfer-Encoding': 'chunked'
+            }
+          });
+        } catch (error) {
+          console.error('Error sending message:', error);
+          return Response.json(
+            { error: error.message || 'Failed to send message' },
+            { status: 500 }
+          );
+        }
+      }
+
+      case 'history': {
+        try {
+          const messages = await getConversationHistory(conversationId);
+          return Response.json({ messages });
+        } catch (error) {
+          console.error('Error getting conversation history:', error);
+          return Response.json(
+            { error: error.message || 'Failed to get conversation history' },
+            { status: 500 }
+          );
+        }
+      }
+
+      default:
+        return Response.json(
+          { error: `Invalid action: ${action}. Supported actions are: create, send, history` },
+          { status: 400 }
+        );
+    }
   } catch (error) {
-    // Enhanced error logging
-    console.error('Chat API error details:', {
-      name: error.name,
-      message: error.message,
-      status: error.status,
-      code: error.code,
-      stack: error.stack
-    });
-
-    // Return more specific error messages based on the error type
-    if (error.name === 'OpenAIError') {
-      return NextResponse.json(
-        { error: `OpenAI API error: ${error.message}` },
-        { status: error.status || 500 }
-      );
-    }
-
-    if (error.name === 'SyntaxError') {
-      return NextResponse.json(
-        { error: 'Invalid request format' },
-        { status: 400 }
-      );
-    }
-
-    return NextResponse.json(
-      { error: `Error processing chat request: ${error.message}` },
+    console.error('Error in chat API:', error);
+    return Response.json(
+      { error: 'Internal server error: ' + (error.message || 'Unknown error') },
       { status: 500 }
     );
   }
