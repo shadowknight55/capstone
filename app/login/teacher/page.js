@@ -64,7 +64,20 @@ export default function TeacherLogin() {
   const [name, setName] = useState('');
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const router = useRouter();
+
+  const checkTeacherStatus = async (email) => {
+    try {
+      const response = await fetch('/api/teacher/status');
+      if (!response.ok) throw new Error('Failed to check status');
+      const data = await response.json();
+      return data.status;
+    } catch (error) {
+      console.error('Error checking teacher status:', error);
+      return 'unknown';
+    }
+  };
 
   /**
    * Handles form submission for both login and registration
@@ -78,25 +91,49 @@ export default function TeacherLogin() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setError('');
+    
     if (isLogin) {
       const result = await signIn('credentials', {
         email,
         password,
         redirect: false,
       });
-      setLoading(false);
+      
       if (result?.ok) {
-        window.location.href = '/teacher/dashboard';
+        const status = await checkTeacherStatus(email);
+        if (status === 'pending') {
+          setError('Your account is pending approval. Please wait for an admin to approve your account.');
+          setLoading(false);
+          return;
+        } else if (status === 'rejected') {
+          setError('Your account has been rejected. Please contact the administrator for more information.');
+          setLoading(false);
+          return;
+        } else if (status === 'active') {
+          window.location.href = '/teacher/dashboard';
+        } else {
+          setError('Unable to verify your account status. Please try again later.');
+        }
+      } else {
+        setError('Invalid email or password');
       }
+      setLoading(false);
     } else {
       const res = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, email, password, role: 'teacher' }),
       });
+      const data = await res.json();
       setLoading(false);
       if (res.ok) {
+        setError('');
         setIsLogin(true);
+        // Show success message for registration
+        setError('Registration successful! Please wait for admin approval before signing in.');
+      } else {
+        setError(data.error || 'Registration failed. Please try again.');
       }
     }
   };
@@ -116,27 +153,39 @@ export default function TeacherLogin() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-green-50 to-white">
       <div className="max-w-md w-full bg-white rounded-xl shadow-lg p-8">
-        <h2 className="text-2xl font-bold text-green-700 mb-6 text-center">Teacher Sign In</h2>
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-green-700 mb-2">LearnPad</h1>
+          <h2 className="text-2xl font-bold text-green-700">Teacher Portal</h2>
+        </div>
+        
+        {error && (
+          <div className="mb-6 p-4 rounded-lg bg-red-50 text-red-700 border border-red-200">
+            {error}
+          </div>
+        )}
+
         <form onSubmit={handleSubmit} className="space-y-6">
           {!isLogin && (
             <div>
-              <label className="block text-sm font-medium text-gray-700">Name</label>
+              <label className="block text-sm font-medium text-gray-700">Full Name</label>
               <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 text-gray-800 placeholder-gray-400"
+                placeholder="Enter your full name"
                 required
               />
             </div>
           )}
           <div>
-            <label className="block text-sm font-medium text-gray-700">Email</label>
+            <label className="block text-sm font-medium text-gray-700">Email Address</label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 text-gray-800 placeholder-gray-400"
+              placeholder="Enter your email"
               required
             />
           </div>
@@ -147,14 +196,15 @@ export default function TeacherLogin() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 text-gray-800 placeholder-gray-400"
+              placeholder="Enter your password"
               required
             />
           </div>
           <button
             type="submit"
-            className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+            className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
           >
-            {isLogin ? 'Sign In' : 'Create Account'}
+            {isLogin ? 'Sign In to LearnPad' : 'Create LearnPad Account'}
           </button>
         </form>
         <div className="flex items-center my-6">

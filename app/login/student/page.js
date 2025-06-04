@@ -111,27 +111,32 @@ export default function StudentLogin() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-teal-50 to-white">
       <div className="max-w-md w-full bg-white rounded-xl shadow-lg p-8">
-        <h2 className="text-2xl font-bold text-teal-600 mb-6 text-center">Student Sign In</h2>
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-teal-700 mb-2">LearnPad</h1>
+          <h2 className="text-2xl font-bold text-teal-700">Student Portal</h2>
+        </div>
         <form onSubmit={handleSubmit} className="space-y-6">
           {!isLogin && (
             <div>
-              <label className="block text-sm font-medium text-gray-700">Name</label>
+              <label className="block text-sm font-medium text-gray-700">Full Name</label>
               <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 text-gray-800 placeholder-gray-400"
+                placeholder="Enter your full name"
                 required
               />
             </div>
           )}
           <div>
-            <label className="block text-sm font-medium text-gray-700">Email</label>
+            <label className="block text-sm font-medium text-gray-700">Email Address</label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 text-gray-800 placeholder-gray-400"
+              placeholder="Enter your email"
               required
             />
           </div>
@@ -142,6 +147,7 @@ export default function StudentLogin() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 text-gray-800 placeholder-gray-400"
+              placeholder="Enter your password"
               required
             />
           </div>
@@ -149,7 +155,7 @@ export default function StudentLogin() {
             type="submit"
             className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
           >
-            {isLogin ? 'Sign In' : 'Create Account'}
+            {isLogin ? 'Sign In to LearnPad' : 'Create LearnPad Account'}
           </button>
         </form>
         <div className="flex items-center my-6">

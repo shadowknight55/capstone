@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "School Portal",
-  description: "School Portal - Login and Registration",
+  title: "LearnPad - Interactive Learning Platform",
+  description: "LearnPad - Interactive learning platform for students and teachers",
 };
 
 export default function RootLayout({ children }) {
