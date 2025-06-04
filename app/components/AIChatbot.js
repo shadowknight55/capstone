@@ -30,12 +30,7 @@ import { useState, useEffect, useRef } from 'react';
  */
 export default function AIChatbot() {
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState([
-    {
-      role: 'assistant',
-      content: '👋 Hi there! I\'m your friendly helper bot! I love helping students learn new things. What would you like to explore today? 🌟'
-    }
-  ]);
+  const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [conversationId, setConversationId] = useState(null);

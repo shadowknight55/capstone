@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * @file Home Page Component
  * @description The landing page for the School Portal application. Provides navigation options
@@ -6,8 +8,6 @@
  * This component serves as the main entry point for users, offering a clean and intuitive
  * interface with two distinct paths for student and teacher authentication.
  */
-
-'use client';
 
 import { useState } from 'react';
 import { signIn } from 'next-auth/react';
@@ -43,7 +43,14 @@ export default function Home() {
         >
           Teacher Sign In
         </a>
+        <a
+          href="/login/admin"
+          className="w-full py-6 text-2xl font-semibold text-center rounded-lg shadow-lg bg-purple-600 text-white hover:bg-purple-700 transition"
+        >
+          Admin Sign In
+        </a>
       </div>
     </div>
   );
 }
+

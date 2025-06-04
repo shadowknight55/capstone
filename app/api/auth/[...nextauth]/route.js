@@ -41,6 +41,7 @@ const handler = NextAuth({
           id: user._id.toString(),
           email: user.email,
           name: user.name,
+          role: user.role
         };
       }
     })
@@ -100,9 +101,11 @@ const handler = NextAuth({
           });
           // Set the user ID in the user object
           user.id = result.insertedId.toString();
+          user.role = role;
         } else {
-          // Set the user ID for existing users
+          // Set the user ID and role for existing users
           user.id = dbUser._id.toString();
+          user.role = dbUser.role;
         }
       }
       return true;
