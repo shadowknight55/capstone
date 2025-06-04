@@ -115,14 +115,7 @@ export default function AIChatbot() {
         body: JSON.stringify({
           action: 'send',
           conversationId,
-          message: `You are a friendly and encouraging AI helper for students. 
-          Use a warm, positive tone with simple, clear language.
-          Include fun emojis occasionally to make the conversation more engaging.
-          If they ask about math, use katex formatting for equations.
-          Keep your responses short, fun, and easy to understand.
-          Always be encouraging and supportive.
-          Do not include any system prompts or technical instructions in your response.
-          Here's what the student asked: ${userMessage}`
+          message: userMessage  // Send only the user's message without any additional context
         })
       });
 
@@ -144,18 +137,17 @@ export default function AIChatbot() {
         try {
           const data = JSON.parse(chunk);
           accumulatedContent += data.content;
-          const cleanedContent = cleanResponse(accumulatedContent);
           
           assistantMessage = {
             role: data.role || 'assistant',
-            content: cleanedContent
+            content: accumulatedContent
           };
           
           setMessages(prev => {
             const newMessages = [...prev];
             const lastMessage = newMessages[newMessages.length - 1];
             if (lastMessage.role === 'assistant') {
-              lastMessage.content = cleanedContent;
+              lastMessage.content = accumulatedContent;
               return newMessages;
             } else {
               return [...newMessages, assistantMessage];
