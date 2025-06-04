@@ -144,6 +144,30 @@ polypad/
 - Analytics dashboard
 - Assignment creation and tracking
 
+### Teacher Dashboard
+- **Navigation Buttons:** Easily access Students, Cohorts, and Student Submissions from a clean dashboard.
+- **Cohort Management:**
+  - Create and delete cohorts
+  - Clickable, clearly styled cohort list
+  - Add students to cohorts (from the Cohorts page)
+  - Remove students from cohorts
+- **Student Submissions:**
+  - View all student work grouped by cohort and student
+  - Click a student to see only their submissions
+  - Click on a screenshot to view it larger in a modal
+  - See submission titles, descriptions, and images
+- **Responsive, modern UI:**
+  - Clean, accessible, and mobile-friendly
+  - Clear navigation and feedback
+
+### Admin Dashboard
+- Approve or reject pending teacher accounts
+- Secure admin-only access
+
+### Student Experience
+- Students can save work (with title, description, screenshot) to a cohort
+- Work is visible to teachers in the Student Submissions section
+
 ---
 
 ## 🤝 Contributing
