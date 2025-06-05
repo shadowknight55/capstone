@@ -56,7 +56,8 @@ export async function POST(req) {
           password: hashedPassword,
           role: 'admin',
           status: 'active',
-          emailVerified: true
+          emailVerified: true,
+          provider: 'credentials',
         }
       });
 
@@ -108,7 +109,8 @@ export async function POST(req) {
         password: hashedPassword,
         role: 'student',
         status: 'active',
-        emailVerified: true
+        emailVerified: true,
+        provider: 'credentials',
       }
     });
 

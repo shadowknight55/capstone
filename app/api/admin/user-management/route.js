@@ -15,7 +15,6 @@ export async function GET(req) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
   }
   const users = await prisma.user.findMany({
-    where: { provider: { not: 'google' } },
     select: {
       id: true,
       name: true,

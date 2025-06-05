@@ -185,27 +185,27 @@ export default function AdminDashboard() {
           ) : users.length === 0 ? (
             <p className="text-gray-600">No users found</p>
           ) : (
-            <table className="w-full text-left border">
+            <table className="w-full text-left border text-gray-800">
               <thead>
                 <tr className="bg-purple-50">
-                  <th className="p-2">Name</th>
-                  <th className="p-2">Email</th>
-                  <th className="p-2">Role</th>
-                  <th className="p-2">Provider</th>
-                  <th className="p-2">Status</th>
-                  <th className="p-2">Created</th>
-                  <th className="p-2">Actions</th>
+                  <th className="p-2 font-bold text-gray-900">Name</th>
+                  <th className="p-2 font-bold text-gray-900">Email</th>
+                  <th className="p-2 font-bold text-gray-900">Role</th>
+                  <th className="p-2 font-bold text-gray-900">Provider</th>
+                  <th className="p-2 font-bold text-gray-900">Status</th>
+                  <th className="p-2 font-bold text-gray-900">Created</th>
+                  <th className="p-2 font-bold text-gray-900">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {users.map(user => (
                   <tr key={user.id} className="border-t">
-                    <td className="p-2">{user.name}</td>
-                    <td className="p-2">{user.email}</td>
-                    <td className="p-2">{user.role}</td>
-                    <td className="p-2">{user.provider || 'credentials'}</td>
-                    <td className="p-2">{user.status}</td>
-                    <td className="p-2">{new Date(user.createdAt).toLocaleDateString()}</td>
+                    <td className="p-2 text-gray-800">{user.name}</td>
+                    <td className="p-2 text-gray-800">{user.email}</td>
+                    <td className="p-2 text-gray-800">{user.role}</td>
+                    <td className="p-2 text-gray-800">{user.provider || 'credentials'}</td>
+                    <td className="p-2 text-gray-800">{user.status}</td>
+                    <td className="p-2 text-gray-800">{new Date(user.createdAt).toLocaleDateString()}</td>
                     <td className="p-2 flex gap-2">
                       {user.provider !== 'google' && (
                         <button
