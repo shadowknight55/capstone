@@ -185,3 +185,11 @@ MIT License — free to use, modify, and distribute.
 ## 📞 Support
 
 For support, please open an issue in the GitHub repository or contact [your contact information].
+
+## Database Schema
+
+See [DATABASE_SCHEMA.md](./DATABASE_SCHEMA.md) for the current PostgreSQL/Prisma schema and relationships.
+
+## Technical Documentation
+
+See [TECH_DOC.md](./TECH_DOC.md) for setup, running, and usage instructions.

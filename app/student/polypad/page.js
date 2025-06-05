@@ -128,7 +128,7 @@ export default function StudentPolypad() {
         setCohorts(cohortsData.cohorts);
         if (cohortsData.cohorts.length > 0) {
           setCurrentCohort(cohortsData.cohorts[0]);
-          setSelectedCohortId(cohortsData.cohorts[0]._id);
+          setSelectedCohortId(cohortsData.cohorts[0].id);
         }
       } catch (error) {
         console.error('Error fetching cohort:', error);
@@ -202,7 +202,7 @@ export default function StudentPolypad() {
           title: workTitle,
           description: workDescription,
           screenshot,
-          cohortId: selectedCohortId || null
+          cohortId: Number(selectedCohortId) || (currentCohort ? currentCohort.id : null)
         }),
       });
 
@@ -295,7 +295,7 @@ export default function StudentPolypad() {
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 text-gray-800"
                   >
                     {cohorts.map(cohort => (
-                      <option key={cohort._id} value={cohort._id}>{cohort.name}</option>
+                      <option key={cohort.id} value={cohort.id}>{cohort.name}</option>
                     ))}
                   </select>
                 </div>

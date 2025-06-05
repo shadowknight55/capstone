@@ -2,6 +2,10 @@
   "name": "capstone",
   "version": "0.1.0",
   "private": true,
+  "prisma": {
+    "seed": "node prisma/seed.js"
+  },
+
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
@@ -11,7 +15,7 @@
   "dependencies": {
     "@auth/mongodb-adapter": "^3.9.1",
     "@heroicons/react": "^2.2.0",
-    "@prisma/client": "^6.8.2",
+    "@prisma/client": "^6.9.0",
     "axios": "^1.9.0",
     "bcryptjs": "^3.0.2",
     "html2canvas": "^1.4.1",
@@ -27,7 +31,7 @@
     "@tailwindcss/postcss": "^4",
     "eslint": "^9",
     "eslint-config-next": "15.3.2",
-    "prisma": "^6.8.2",
+    "prisma": "^6.9.0",
     "tailwindcss": "^4"
   }
 }

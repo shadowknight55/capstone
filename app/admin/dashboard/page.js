@@ -104,7 +104,7 @@ export default function AdminDashboard() {
             <div className="space-y-4">
               {pendingTeachers.map((teacher) => (
                 <div
-                  key={teacher._id}
+                  key={teacher.id}
                   className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
                 >
                   <div>

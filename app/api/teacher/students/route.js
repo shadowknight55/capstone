@@ -1,9 +1,7 @@
 import { NextResponse } from 'next/server';
-import clientPromise from '@/lib/mongodb';
+import prisma from '@/lib/prisma';
 
 export async function GET() {
-  const client = await clientPromise;
-  const usersCollection = client.db('school_portal').collection('users');
-  const students = await usersCollection.find({ role: 'student' }).toArray();
+  const students = await prisma.user.findMany({ where: { role: 'student' } });
   return NextResponse.json({ students });
 } 

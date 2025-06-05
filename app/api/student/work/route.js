@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
-import clientPromise from '@/lib/mongodb';
-import { ObjectId } from 'mongodb';
+import prisma from '@/lib/prisma';
 
 export async function GET(req) {
   const { searchParams } = new URL(req.url);
@@ -10,12 +9,10 @@ export async function GET(req) {
     return NextResponse.json({ error: 'Student ID required' }, { status: 400 });
   }
 
-  const client = await clientPromise;
-  const workCollection = client.db('school_portal').collection('saved_work');
-  
-  const work = await workCollection.find({ 
-    studentId: new ObjectId(studentId) 
-  }).sort({ createdAt: -1 }).toArray();
+  const work = await prisma.savedWork.findMany({
+    where: { studentId: Number(studentId) },
+    orderBy: { createdAt: 'desc' }
+  });
   
   return NextResponse.json({ work });
 }
@@ -27,31 +24,17 @@ export async function POST(req) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
   }
 
-  const client = await clientPromise;
-  const workCollection = client.db('school_portal').collection('saved_work');
-  
-  const result = await workCollection.insertOne({
-    studentId: new ObjectId(studentId),
-    cohortId: cohortId ? new ObjectId(cohortId) : null,
-    title,
-    description: description || '',
-    screenshot,
-    createdAt: new Date(),
-    updatedAt: new Date()
-  });
-
-  return NextResponse.json({ 
-    work: {
-      _id: result.insertedId,
-      studentId,
-      cohortId,
+  const newWork = await prisma.savedWork.create({
+    data: {
+      studentId: Number(studentId),
+      cohortId: cohortId ? Number(cohortId) : null,
       title,
-      description,
-      screenshot,
-      createdAt: new Date(),
-      updatedAt: new Date()
+      description: description || '',
+      screenshot
     }
   });
+
+  return NextResponse.json({ work: newWork });
 }
 
 export async function DELETE(req) {
@@ -63,16 +46,14 @@ export async function DELETE(req) {
     return NextResponse.json({ error: 'Work ID and Student ID required' }, { status: 400 });
   }
 
-  const client = await clientPromise;
-  const workCollection = client.db('school_portal').collection('saved_work');
-  
-  // Delete the work only if it belongs to the student
-  const result = await workCollection.deleteOne({
-    _id: new ObjectId(workId),
-    studentId: new ObjectId(studentId)
+  const deleted = await prisma.savedWork.deleteMany({
+    where: {
+      id: Number(workId),
+      studentId: Number(studentId)
+    }
   });
 
-  if (result.deletedCount === 0) {
+  if (deleted.count === 0) {
     return NextResponse.json({ error: 'Work not found or unauthorized' }, { status: 404 });
   }
 

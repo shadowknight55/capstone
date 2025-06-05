@@ -1,12 +1,10 @@
 import NextAuth from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
 import CredentialsProvider from 'next-auth/providers/credentials';
-import { MongoDBAdapter } from '@auth/mongodb-adapter';
-import clientPromise from '@/lib/mongodb';
 import bcrypt from 'bcryptjs';
+import prisma from '@/lib/prisma';
 
 const handler = NextAuth({
-  adapter: MongoDBAdapter(clientPromise),
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_ID,
@@ -23,22 +21,28 @@ const handler = NextAuth({
           throw new Error('Please enter an email and password');
         }
 
-        const client = await clientPromise;
-        const usersCollection = client.db("school_portal").collection("users");
-        const user = await usersCollection.findOne({ email: credentials.email });
+        const user = await prisma.user.findUnique({
+          where: { email: credentials.email }
+        });
 
+        console.log('LOGIN ATTEMPT:', credentials.email, credentials.password, 'FOUND USER:', user);
+        console.log('HASH IN DB:', user?.password);
+        console.log('BCRYPT TEST (direct):', await bcrypt.compare('admin123', user?.password));
+        console.log('BCRYPT TEST (input):', await bcrypt.compare(credentials.password, user?.password));
         if (!user || !user?.password) {
           throw new Error('No user found with this email');
         }
 
         const isPasswordValid = await bcrypt.compare(credentials.password, user.password);
 
+        console.log('PASSWORD VALID:', isPasswordValid);
+
         if (!isPasswordValid) {
           throw new Error('Invalid password');
         }
 
         return {
-          id: user._id.toString(),
+          id: user.id.toString(),
           email: user.email,
           name: user.name,
           role: user.role
@@ -59,12 +63,12 @@ const handler = NextAuth({
         token.role = user.role;
       } else if (!token.role && token.email) {
         // Fetch role from DB if not present
-        const client = await clientPromise;
-        const usersCollection = client.db("school_portal").collection("users");
-        const dbUser = await usersCollection.findOne({ email: token.email });
+        const dbUser = await prisma.user.findUnique({
+          where: { email: token.email }
+        });
         if (dbUser) {
           token.role = dbUser.role;
-          token.id = dbUser._id.toString();
+          token.id = dbUser.id.toString();
         }
       }
       return token;
@@ -76,12 +80,13 @@ const handler = NextAuth({
       }
       return session;
     },
-    async signIn({ user, account, profile, email, credentials }) {
+    async signIn({ user, account, profile }) {
       // Only for Google sign-in
       if (account?.provider === 'google') {
-        const client = await clientPromise;
-        const usersCollection = client.db("school_portal").collection("users");
-        let dbUser = await usersCollection.findOne({ email: user.email });
+        let dbUser = await prisma.user.findUnique({
+          where: { email: user.email }
+        });
+
         if (!dbUser) {
           // Get role from localStorage via query param (not available server-side), fallback to 'student'
           let role = 'student';
@@ -92,25 +97,26 @@ const handler = NextAuth({
             // Optionally, use Google domain for teachers
             role = 'teacher';
           }
-          const result = await usersCollection.insertOne({
-            name: user.name,
-            email: user.email,
-            role,
-            createdAt: new Date(),
-            provider: 'google',
+
+          dbUser = await prisma.user.create({
+            data: {
+              name: user.name,
+              email: user.email,
+              role,
+              emailVerified: true,
+              status: 'active',
+              provider: 'google',
+            }
           });
-          // Set the user ID in the user object
-          user.id = result.insertedId.toString();
-          user.role = role;
-        } else {
-          // Set the user ID and role for existing users
-          user.id = dbUser._id.toString();
-          user.role = dbUser.role;
         }
+
+        // Set the user ID and role
+        user.id = dbUser.id.toString();
+        user.role = dbUser.role;
       }
       return true;
-    },
-  },
+    }
+  }
 });
 
 export { handler as GET, handler as POST };

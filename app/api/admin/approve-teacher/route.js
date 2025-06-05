@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getToken } from 'next-auth/jwt';
-import clientPromise from '@/lib/mongodb';
+import prisma from '@/lib/prisma';
 
 // List of admin emails who can approve teacher accounts
 const ADMIN_EMAILS = [
@@ -28,14 +28,12 @@ export async function POST(req) {
       );
     }
 
-    const client = await clientPromise;
-    const pendingTeachersCollection = client.db("school_portal").collection("pending_teachers");
-    const usersCollection = client.db("school_portal").collection("users");
-
     // Find the pending teacher
-    const pendingTeacher = await pendingTeachersCollection.findOne({ 
-      email: teacherEmail,
-      status: 'pending'
+    const pendingTeacher = await prisma.pendingTeacher.findUnique({
+      where: { 
+        email: teacherEmail,
+        status: 'pending'
+      }
     });
 
     if (!pendingTeacher) {
@@ -46,20 +44,24 @@ export async function POST(req) {
     }
 
     if (action === 'approve') {
-      // Move teacher to main users collection
-      await usersCollection.insertOne({
-        name: pendingTeacher.name,
-        email: pendingTeacher.email,
-        password: pendingTeacher.password,
-        role: 'teacher',
-        createdAt: new Date(),
-        status: 'active',
-        approvedBy: token.email,
-        approvedAt: new Date()
+      // Create teacher account
+      await prisma.user.create({
+        data: {
+          name: pendingTeacher.name,
+          email: pendingTeacher.email,
+          password: pendingTeacher.password,
+          role: 'teacher',
+          status: 'active',
+          emailVerified: true,
+          approvedBy: token.email,
+          approvedAt: new Date()
+        }
       });
 
-      // Remove from pending collection
-      await pendingTeachersCollection.deleteOne({ _id: pendingTeacher._id });
+      // Delete pending teacher record
+      await prisma.pendingTeacher.delete({
+        where: { id: pendingTeacher.id }
+      });
 
       // TODO: Send approval email to teacher
 
@@ -68,16 +70,14 @@ export async function POST(req) {
       });
     } else {
       // Reject the teacher
-      await pendingTeachersCollection.updateOne(
-        { _id: pendingTeacher._id },
-        { 
-          $set: { 
-            status: 'rejected',
-            rejectedBy: token.email,
-            rejectedAt: new Date()
-          }
+      await prisma.pendingTeacher.update({
+        where: { id: pendingTeacher.id },
+        data: { 
+          status: 'rejected',
+          rejectedBy: token.email,
+          rejectedAt: new Date()
         }
-      );
+      });
 
       // TODO: Send rejection email to teacher
 
@@ -106,13 +106,16 @@ export async function GET(req) {
       );
     }
 
-    const client = await clientPromise;
-    const pendingTeachersCollection = client.db("school_portal").collection("pending_teachers");
-    
-    const pendingTeachers = await pendingTeachersCollection
-      .find({ status: 'pending' })
-      .project({ password: 0 }) // Don't send passwords
-      .toArray();
+    const pendingTeachers = await prisma.pendingTeacher.findMany({
+      where: { status: 'pending' },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        createdAt: true,
+        // Exclude password
+      }
+    });
 
     return NextResponse.json({ pendingTeachers });
   } catch (error) {

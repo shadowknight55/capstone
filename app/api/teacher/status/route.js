@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getToken } from 'next-auth/jwt';
-import clientPromise from '@/lib/mongodb';
+import prisma from '@/lib/prisma';
 
 export async function GET(req) {
   try {
@@ -12,18 +12,12 @@ export async function GET(req) {
       );
     }
 
-    const client = await clientPromise;
-    const usersCollection = client.db("school_portal").collection("users");
-    const pendingTeachersCollection = client.db("school_portal").collection("pending_teachers");
-
-    // Check if teacher is in the main users collection
-    const teacher = await usersCollection.findOne({ 
-      email: token.email,
-      role: 'teacher'
+    // Check if teacher is in the main users table
+    const teacher = await prisma.user.findUnique({
+      where: { email: token.email }
     });
-
-    if (teacher) {
-      return NextResponse.json({ 
+    if (teacher && teacher.role === 'teacher') {
+      return NextResponse.json({
         status: 'active',
         approvedAt: teacher.approvedAt,
         approvedBy: teacher.approvedBy
@@ -31,26 +25,19 @@ export async function GET(req) {
     }
 
     // Check if teacher is pending
-    const pendingTeacher = await pendingTeachersCollection.findOne({ 
-      email: token.email,
-      status: 'pending'
+    const pendingTeacher = await prisma.pendingTeacher.findUnique({
+      where: { email: token.email }
     });
-
-    if (pendingTeacher) {
+    if (pendingTeacher && pendingTeacher.status === 'pending') {
       return NextResponse.json({ status: 'pending' });
     }
 
     // Check if teacher was rejected
-    const rejectedTeacher = await pendingTeachersCollection.findOne({ 
-      email: token.email,
-      status: 'rejected'
-    });
-
-    if (rejectedTeacher) {
-      return NextResponse.json({ 
+    if (pendingTeacher && pendingTeacher.status === 'rejected') {
+      return NextResponse.json({
         status: 'rejected',
-        rejectedAt: rejectedTeacher.rejectedAt,
-        rejectedBy: rejectedTeacher.rejectedBy
+        rejectedAt: pendingTeacher.rejectedAt,
+        rejectedBy: pendingTeacher.rejectedBy
       });
     }
 

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
-import clientPromise from '@/lib/mongodb';
+import prisma from '@/lib/prisma';
 
 // List of approved teacher email domains
 const APPROVED_TEACHER_DOMAINS = [
@@ -34,12 +34,11 @@ export async function POST(req) {
       );
     }
 
-    const client = await clientPromise;
-    const usersCollection = client.db("school_portal").collection("users");
-    const pendingTeachersCollection = client.db("school_portal").collection("pending_teachers");
-
     // Check if user already exists
-    const existingUser = await usersCollection.findOne({ email });
+    const existingUser = await prisma.user.findUnique({
+      where: { email }
+    });
+
     if (existingUser) {
       return NextResponse.json(
         { error: 'User already exists' },
@@ -50,17 +49,19 @@ export async function POST(req) {
     // Special handling for admin registration
     if (role === 'admin' && email === 'testadmin@gmail.com') {
       const hashedPassword = await bcrypt.hash(password, 12);
-      const result = await usersCollection.insertOne({
-        name,
-        email,
-        password: hashedPassword,
-        role: 'admin',
-        createdAt: new Date(),
-        status: 'active'
+      const user = await prisma.user.create({
+        data: {
+          name,
+          email,
+          password: hashedPassword,
+          role: 'admin',
+          status: 'active',
+          emailVerified: true
+        }
       });
 
       return NextResponse.json(
-        { message: 'Admin account created successfully', userId: result.insertedId },
+        { message: 'Admin account created successfully', userId: user.id },
         { status: 201 }
       );
     }
@@ -80,18 +81,14 @@ export async function POST(req) {
 
       // Create a pending teacher account that requires admin approval
       const hashedPassword = await bcrypt.hash(password, 12);
-      await pendingTeachersCollection.insertOne({
-        name,
-        email,
-        password: hashedPassword,
-        role: 'teacher',
-        status: 'pending',
-        createdAt: new Date(),
-        verificationToken: crypto.randomUUID(), // Generate a unique verification token
+      const pendingTeacher = await prisma.pendingTeacher.create({
+        data: {
+          name,
+          email,
+          password: hashedPassword,
+          verificationToken: crypto.randomUUID()
+        }
       });
-
-      // TODO: Send email to admin for approval
-      // TODO: Send verification email to teacher
 
       return NextResponse.json(
         { 
@@ -104,17 +101,19 @@ export async function POST(req) {
 
     // Regular student registration
     const hashedPassword = await bcrypt.hash(password, 12);
-    const result = await usersCollection.insertOne({
-      name,
-      email,
-      password: hashedPassword,
-      role: 'student',
-      createdAt: new Date(),
-      status: 'active'
+    const user = await prisma.user.create({
+      data: {
+        name,
+        email,
+        password: hashedPassword,
+        role: 'student',
+        status: 'active',
+        emailVerified: true
+      }
     });
 
     return NextResponse.json(
-      { message: 'Student account created successfully', userId: result.insertedId },
+      { message: 'Student account created successfully', userId: user.id },
       { status: 201 }
     );
   } catch (error) {

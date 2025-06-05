@@ -103,7 +103,7 @@ export default function TeacherWorkPage() {
         >
           <option value="">Select a cohort</option>
           {cohorts.map(cohort => (
-            <option key={cohort._id} value={cohort._id}>{cohort.name}</option>
+            <option key={cohort.id} value={cohort.id}>{cohort.name}</option>
           ))}
         </select>
         {loadingWork ? (
@@ -132,7 +132,7 @@ export default function TeacherWorkPage() {
               {selectedStudentId ? (
                 <ul className="divide-y divide-gray-200">
                   {(studentWorkMap[selectedStudentId] || []).map(item => (
-                    <li key={item._id} className="py-4">
+                    <li key={item.id || item._id} className="py-4">
                       <div className="font-bold text-lg text-gray-900 mb-1">{item.title || '[No Title]'}</div>
                       {item.description && (
                         <div className="text-gray-700 mb-2">{item.description}</div>

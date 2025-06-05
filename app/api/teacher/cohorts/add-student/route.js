@@ -1,15 +1,16 @@
 import { NextResponse } from 'next/server';
-import clientPromise from '@/lib/mongodb';
-import { ObjectId } from 'mongodb';
+import prisma from '@/lib/prisma';
 
 export async function POST(req) {
   const { cohortId, studentId } = await req.json();
   if (!cohortId || !studentId) return NextResponse.json({ error: 'Missing data' }, { status: 400 });
-  const client = await clientPromise;
-  const cohortsCollection = client.db('school_portal').collection('cohorts');
-  await cohortsCollection.updateOne(
-    { _id: new ObjectId(cohortId) },
-    { $addToSet: { students: new ObjectId(studentId) } }
-  );
+  await prisma.cohort.update({
+    where: { id: Number(cohortId) },
+    data: {
+      students: {
+        connect: { id: Number(studentId) }
+      }
+    }
+  });
   return NextResponse.json({ ok: true });
 } 

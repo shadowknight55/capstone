@@ -1,12 +1,11 @@
-generator client {
-  provider = "prisma-client-js"
-}
+# School Portal Database Schema (PostgreSQL/Prisma)
 
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
+## Database: PostgreSQL (Prisma ORM)
 
+### Models
+
+#### User
+```prisma
 model User {
   id            Int      @id @default(autoincrement())
   email         String   @unique
@@ -29,7 +28,10 @@ model User {
   cohorts       Cohort[]    @relation("CohortStudents")
   teachingCohorts Cohort[]  @relation("CohortTeacher")
 }
+```
 
+#### Cohort
+```prisma
 model Cohort {
   id        Int      @id @default(autoincrement())
   name      String
@@ -42,7 +44,10 @@ model Cohort {
   teacherId Int?
   work      SavedWork[]
 }
+```
 
+#### SavedWork
+```prisma
 model SavedWork {
   id          Int      @id @default(autoincrement())
   title       String
@@ -57,7 +62,10 @@ model SavedWork {
   cohort      Cohort?  @relation(fields: [cohortId], references: [id])
   cohortId    Int?
 }
+```
 
+#### PendingTeacher
+```prisma
 model PendingTeacher {
   id                Int      @id @default(autoincrement())
   email            String   @unique
@@ -68,3 +76,38 @@ model PendingTeacher {
   createdAt        DateTime @default(now())
   verificationToken String   @unique
 }
+```
+
+### Indexes
+- User: `email` (unique)
+- PendingTeacher: `email` (unique), `verificationToken` (unique)
+- Cohort: `id` (primary key)
+- SavedWork: `id` (primary key)
+
+### Relationships
+- **User–Cohort (Many-to-Many):** Students can be in multiple cohorts, cohorts can have multiple students.
+- **User–Cohort (One-to-Many):** A teacher can teach multiple cohorts.
+- **Cohort–SavedWork (One-to-Many):** Each cohort can have multiple saved work entries.
+- **User–SavedWork (One-to-Many):** Each student can have multiple saved work entries.
+
+### Security & Validation
+- Passwords are hashed using bcrypt.
+- Email must be unique for users and pending teachers.
+- Role-based access control (RBAC) enforced in API and middleware.
+- Data validation for required fields and correct types.
+
+### Data Management
+- Regular PostgreSQL backups recommended.
+- Prisma migrations for schema changes.
+
+### Performance
+- Indexed fields for fast lookups (email, IDs).
+- Use of Prisma's query optimizations and relations.
+
+---
+
+For more details, see the Prisma schema file: `prisma/schema.prisma`.
+
+---
+
+# See README.md for project setup and usage. 

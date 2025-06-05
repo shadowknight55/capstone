@@ -106,7 +106,7 @@ export default function StudentHome() {
       }
       
       // Update the work list
-      setStudentWork(prevWork => prevWork.filter(work => work._id !== workId));
+      setStudentWork(prevWork => prevWork.filter(work => work.id !== workId));
       setShowDeleteConfirm(false);
       setWorkToDelete(null);
     } catch (error) {
@@ -156,7 +156,7 @@ export default function StudentHome() {
             ) : (
               <ul className="space-y-3">
                 {cohorts.map(cohort => (
-                  <li key={cohort._id} className="p-4 bg-teal-50 rounded-lg border border-teal-100">
+                  <li key={cohort.id} className="p-4 bg-teal-50 rounded-lg border border-teal-100">
                     <span className="font-medium text-teal-800">{cohort.name}</span>
                     {cohort.description && (
                       <p className="text-gray-600 text-sm mt-1">{cohort.description}</p>
@@ -176,7 +176,7 @@ export default function StudentHome() {
               <div className="grid grid-cols-1 gap-4">
                 {studentWork.slice(0, 3).map(work => (
                   <div
-                    key={work._id}
+                    key={work.id}
                     className="border rounded-lg overflow-hidden bg-teal-50 hover:bg-teal-100 transition"
                   >
                     <div className="p-4">
@@ -195,7 +195,7 @@ export default function StudentHome() {
                             </p>
                             {work.cohortId && (
                               <span className="text-xs bg-teal-100 text-teal-800 px-2 py-1 rounded">
-                                {cohorts.find(c => c._id === work.cohortId)?.name || 'Cohort'}
+                                {cohorts.find(c => c.id === work.cohortId)?.name || 'Cohort'}
                               </span>
                             )}
                           </div>
@@ -251,7 +251,7 @@ export default function StudentHome() {
                 Cancel
               </button>
               <button
-                onClick={() => handleDeleteWork(workToDelete._id)}
+                onClick={() => handleDeleteWork(workToDelete.id)}
                 className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 disabled:opacity-50"
                 disabled={loading}
               >

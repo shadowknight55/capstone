@@ -11,6 +11,9 @@ export async function middleware(req) {
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
   const { pathname } = req.nextUrl;
 
+  // Debug: log the token and path
+  console.log('MIDDLEWARE TOKEN:', token, 'PATH:', pathname);
+
   // Public paths that don't require authentication
   const publicPaths = ['/', '/login/student', '/login/teacher', '/api/auth'];
   if (publicPaths.some(path => pathname.startsWith(path))) {

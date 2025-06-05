@@ -1,20 +1,19 @@
 import { NextResponse } from 'next/server';
-import clientPromise from '@/lib/mongodb';
-import { ObjectId } from 'mongodb';
+import prisma from '@/lib/prisma';
 
-export async function GET() {
-  const client = await clientPromise;
-  const cohortsCollection = client.db('school_portal').collection('cohorts');
-  const cohorts = await cohortsCollection.find({}).toArray();
+export async function GET(req) {
+  const url = req?.url ? new URL(req.url, 'http://localhost') : null;
+  const includeStudents = url?.searchParams.get('includeStudents');
+  const cohorts = await prisma.cohort.findMany({
+    include: includeStudents ? { students: true } : undefined
+  });
   return NextResponse.json({ cohorts });
 }
 
 export async function POST(req) {
   const { name } = await req.json();
   if (!name) return NextResponse.json({ error: 'Name required' }, { status: 400 });
-  const client = await clientPromise;
-  const cohortsCollection = client.db('school_portal').collection('cohorts');
-  await cohortsCollection.insertOne({ name, students: [] });
-  const cohorts = await cohortsCollection.find({}).toArray();
+  await prisma.cohort.create({ data: { name } });
+  const cohorts = await prisma.cohort.findMany();
   return NextResponse.json({ cohorts });
 } 

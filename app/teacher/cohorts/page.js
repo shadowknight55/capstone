@@ -16,6 +16,20 @@ function Modal({ open, onClose, children }) {
   );
 }
 
+function LoadingOverlay({ message = "Processing..." }) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30">
+      <div className="bg-white rounded-lg shadow-lg p-8 flex flex-col items-center">
+        <svg className="animate-spin h-10 w-10 text-green-600 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+        </svg>
+        <div className="text-green-700 text-lg font-semibold">{message}</div>
+      </div>
+    </div>
+  );
+}
+
 export default function TeacherCohortsPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
@@ -42,9 +56,9 @@ export default function TeacherCohortsPage() {
     const studentsData = await studentsRes.json();
     setStudents(studentsData.students || []);
     const map = {};
-    (studentsData.students || []).forEach(s => { map[s._id] = s; });
+    (studentsData.students || []).forEach(s => { map[s.id] = s; });
     setStudentMap(map);
-    const cohortsRes = await fetch('/api/teacher/cohorts');
+    const cohortsRes = await fetch('/api/teacher/cohorts?includeStudents=1');
     const cohortsData = await cohortsRes.json();
     setCohorts(cohortsData.cohorts || []);
     setLoading(false);
@@ -139,6 +153,7 @@ export default function TeacherCohortsPage() {
 
   return (
     <div className="min-h-screen bg-green-50 px-4 py-8">
+      {(loading || quickAddLoading) && <LoadingOverlay message="Processing..." />}
       <div className="max-w-3xl mx-auto bg-white rounded-xl shadow-lg p-6">
         <div className="flex justify-between items-center mb-6">
           <button onClick={() => router.push('/teacher/dashboard')} className="px-4 py-2 bg-gray-200 text-green-700 rounded-lg hover:bg-gray-300 transition">Back to Dashboard</button>
@@ -157,7 +172,7 @@ export default function TeacherCohortsPage() {
             >
               <option value="">Select Cohort</option>
               {cohorts.map(cohort => (
-                <option key={cohort._id} value={cohort._id}>{cohort.name}</option>
+                <option key={cohort.id} value={cohort.id}>{cohort.name}</option>
               ))}
             </select>
             <select
@@ -168,7 +183,7 @@ export default function TeacherCohortsPage() {
             >
               <option value="">Select Student</option>
               {students.map(student => (
-                <option key={student._id} value={student._id}>{student.name} ({student.email})</option>
+                <option key={student.id} value={student.id}>{student.name} ({student.email})</option>
               ))}
             </select>
           </div>
@@ -190,10 +205,10 @@ export default function TeacherCohortsPage() {
         </form>
         <ul className="divide-y divide-gray-200">
           {cohorts.map(cohort => (
-            <li key={cohort._id}>
+            <li key={cohort.id}>
               <button
                 type="button"
-                className={`w-full flex items-center justify-between py-2 px-2 text-left font-medium text-lg rounded transition ${selectedCohort && selectedCohort._id === cohort._id ? 'bg-green-100 text-green-700' : 'hover:bg-green-50 text-gray-900'}`}
+                className={`w-full flex items-center justify-between py-2 px-2 text-left font-medium text-lg rounded transition ${selectedCohort && selectedCohort.id === cohort.id ? 'bg-green-100 text-green-700' : 'hover:bg-green-50 text-gray-900'}`}
                 style={{ cursor: 'pointer' }}
                 onClick={() => setSelectedCohort(cohort)}
               >
@@ -202,7 +217,7 @@ export default function TeacherCohortsPage() {
               </button>
               <button
                 className="ml-2 px-2 py-1 text-xs bg-red-100 text-red-700 rounded hover:bg-red-200"
-                onClick={() => { setShowDeleteCohortModal(true); setCohortToDelete(cohort._id); }}
+                onClick={() => { setShowDeleteCohortModal(true); setCohortToDelete(cohort.id); }}
               >
                 Delete
               </button>
@@ -221,15 +236,15 @@ export default function TeacherCohortsPage() {
               </button>
             </div>
             <ul className="divide-y divide-gray-200">
-              {(selectedCohort.students || []).length === 0 && (
+              {(selectedCohort?.students || []).length === 0 && (
                 <li className="py-2 text-gray-500">No students in this cohort.</li>
               )}
-              {(selectedCohort.students || []).map(studentId => (
-                <li key={studentId} className="py-2 flex items-center justify-between">
-                  <span className="font-semibold text-lg text-gray-900">{studentMap[studentId]?.name || 'Unknown Student'} <span className="text-base text-blue-700 font-normal">({studentMap[studentId]?.email || 'Unknown'})</span></span>
+              {(selectedCohort?.students || []).map(student => (
+                <li key={student.id} className="py-2 flex items-center justify-between">
+                  <span className="font-semibold text-lg text-gray-900">{student.name} <span className="text-base text-blue-700 font-normal">({student.email})</span></span>
                   <button
                     className="ml-2 px-2 py-1 text-xs bg-red-100 text-red-700 rounded hover:bg-red-200"
-                    onClick={() => { setShowRemoveStudentModal(true); setStudentToRemove(studentId); }}
+                    onClick={() => { setShowRemoveStudentModal(true); setStudentToRemove(student.id); }}
                   >
                     Remove
                   </button>
@@ -246,8 +261,8 @@ export default function TeacherCohortsPage() {
             className="w-full px-3 py-2 border rounded mb-4 bg-white text-gray-900"
           >
             <option value="">Select a student</option>
-            {students.filter(s => !(selectedCohort?.students || []).includes(s._id)).map(student => (
-              <option key={student._id} value={student._id}>{student.name} ({student.email})</option>
+            {students.filter(s => !(selectedCohort?.students || []).includes(s.id)).map(student => (
+              <option key={student.id} value={student.id}>{student.name} ({student.email})</option>
             ))}
           </select>
           <button
