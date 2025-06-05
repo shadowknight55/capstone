@@ -1,4 +1,4 @@
-# LearnPad - Interactive Mathematics Workspace
+# Polypad Playground - Interactive Mathematics Workspace
 
 ## Project Overview
 
@@ -28,7 +28,7 @@ Current solutions are fragmented, with limited real-time collaboration, lack of 
 ## Solution Overview
 
 ### Project Description
-LearnPad is a modern, AI-powered digital mathematics workspace that connects students and teachers in a collaborative environment. Students can practice math, save and submit work, and receive instant AI or teacher feedback. Teachers can manage cohorts, review student submissions, and track progress. Admins can manage users and approve teacher accounts. The platform is built for accessibility, responsiveness, and ease of use.
+Polypad Playground is a modern, AI-powered digital mathematics workspace that connects students and teachers in a collaborative environment. Students can practice math, save and submit work, and receive instant AI or teacher feedback. Teachers can manage cohorts, review student submissions, and track progress. Admins can manage users and approve teacher accounts. The platform is built for accessibility, responsiveness, and ease of use.
 
 ### Key Features
 - Interactive mathematics workspace (via Polypad API)
@@ -38,7 +38,7 @@ LearnPad is a modern, AI-powered digital mathematics workspace that connects stu
 - Admin dashboard for user management and teacher approval
 
 ### Value Proposition
-LearnPad offers a unified, easy-to-use platform that combines interactive math tools, real-time feedback, and robust cohort management. Its AI assistant and modern UI make it more effective and engaging than traditional solutions.
+Polypad Playground offers a unified, easy-to-use platform that combines interactive math tools, real-time feedback, and robust cohort management. Its AI assistant and modern UI make it more effective and engaging than traditional solutions.
 
 ### AI Implementation
 AI is used to provide instant feedback and assistance to students, helping them solve problems and understand concepts. The AI leverages the Playlab API for natural language understanding and response generation.
@@ -174,7 +174,7 @@ Manual and automated testing of core flows.
 
 ### Required API Keys & Services
 
-To run LearnPad, you will need API keys or credentials for the following services:
+To run Polypad Playground, you will need API keys or credentials for the following services:
 
 - **Playlab API**: For AI-powered math assistance
 - **Polypad API**: For the interactive mathematics workspace
@@ -240,7 +240,7 @@ Custom math models, more contextual feedback.
 
 ## Conclusion
 
-LearnPad delivers a modern, AI-powered math learning experience for students and teachers, with robust admin controls and a scalable, maintainable codebase.
+Polypad Playground delivers a modern, AI-powered math learning experience for students and teachers, with robust admin controls and a scalable, maintainable codebase.
 
 ---
 
