@@ -16,12 +16,60 @@ function LoadingScreen({ message = "Loading..." }) {
   );
 }
 
+function PasswordResetModal({ open, onClose, onSubmit, user }) {
+  const [newPassword, setNewPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  if (!open || !user) return null;
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+      <div className="bg-white rounded-lg shadow-lg p-6 min-w-[300px] max-w-md">
+        <h3 className="font-bold text-lg mb-2">Reset Password for {user.name} ({user.email})</h3>
+        <input
+          type="password"
+          className="w-full border rounded px-3 py-2 mb-2"
+          placeholder="New password"
+          value={newPassword}
+          onChange={e => setNewPassword(e.target.value)}
+        />
+        {error && <div className="text-red-600 text-sm mb-2">{error}</div>}
+        <div className="flex gap-2 justify-end">
+          <button className="px-4 py-2 bg-gray-200 rounded" onClick={onClose}>Cancel</button>
+          <button
+            className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700"
+            disabled={loading}
+            onClick={async () => {
+              setLoading(true);
+              setError('');
+              try {
+                await onSubmit(newPassword);
+                setNewPassword('');
+                onClose();
+              } catch (e) {
+                setError('Failed to reset password');
+              } finally {
+                setLoading(false);
+              }
+            }}
+          >
+            Reset
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function AdminDashboard() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [pendingTeachers, setPendingTeachers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState('');
+  const [users, setUsers] = useState([]);
+  const [userLoading, setUserLoading] = useState(true);
+  const [showResetModal, setShowResetModal] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
 
   useEffect(() => {
     if (status === 'loading') return;
@@ -34,6 +82,7 @@ export default function AdminDashboard() {
       return;
     }
     fetchPendingTeachers();
+    fetchUsers();
   }, [session, status, router]);
 
   const fetchPendingTeachers = async () => {
@@ -47,6 +96,19 @@ export default function AdminDashboard() {
       setMessage('Error loading pending teachers');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchUsers = async () => {
+    setUserLoading(true);
+    try {
+      const res = await fetch('/api/admin/user-management');
+      const data = await res.json();
+      setUsers(data.users || []);
+    } catch (e) {
+      setUsers([]);
+    } finally {
+      setUserLoading(false);
     }
   };
 
@@ -69,6 +131,27 @@ export default function AdminDashboard() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleResetPassword = async (userId, newPassword) => {
+    await fetch('/api/admin/user-management', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId, newPassword }),
+    });
+    await fetchUsers();
+    setMessage('Password reset successfully');
+  };
+
+  const handleDeleteUser = async (userId) => {
+    if (!window.confirm('Are you sure you want to delete this user? This cannot be undone.')) return;
+    await fetch('/api/admin/user-management', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId }),
+    });
+    await fetchUsers();
+    setMessage('User deleted successfully');
   };
 
   if (loading) return <LoadingScreen />;
@@ -95,6 +178,62 @@ export default function AdminDashboard() {
           </div>
         )}
 
+        <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
+          <h2 className="text-2xl font-semibold text-gray-800 mb-6">User Management</h2>
+          {userLoading ? (
+            <LoadingScreen message="Loading users..." />
+          ) : users.length === 0 ? (
+            <p className="text-gray-600">No users found</p>
+          ) : (
+            <table className="w-full text-left border">
+              <thead>
+                <tr className="bg-purple-50">
+                  <th className="p-2">Name</th>
+                  <th className="p-2">Email</th>
+                  <th className="p-2">Role</th>
+                  <th className="p-2">Provider</th>
+                  <th className="p-2">Status</th>
+                  <th className="p-2">Created</th>
+                  <th className="p-2">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {users.map(user => (
+                  <tr key={user.id} className="border-t">
+                    <td className="p-2">{user.name}</td>
+                    <td className="p-2">{user.email}</td>
+                    <td className="p-2">{user.role}</td>
+                    <td className="p-2">{user.provider || 'credentials'}</td>
+                    <td className="p-2">{user.status}</td>
+                    <td className="p-2">{new Date(user.createdAt).toLocaleDateString()}</td>
+                    <td className="p-2 flex gap-2">
+                      {user.provider !== 'google' && (
+                        <button
+                          className="px-2 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-xs"
+                          onClick={() => { setSelectedUser(user); setShowResetModal(true); }}
+                        >
+                          Reset Password
+                        </button>
+                      )}
+                      <button
+                        className="px-2 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-xs"
+                        onClick={() => handleDeleteUser(user.id)}
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+        <PasswordResetModal
+          open={showResetModal}
+          onClose={() => setShowResetModal(false)}
+          onSubmit={pw => handleResetPassword(selectedUser.id, pw)}
+          user={selectedUser}
+        />
         <div className="bg-white rounded-xl shadow-lg p-6">
           <h2 className="text-2xl font-semibold text-gray-800 mb-6">Teacher Approval Requests</h2>
           
