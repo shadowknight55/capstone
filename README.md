@@ -50,7 +50,7 @@ This platform aims to revolutionize mathematics education by offering:
 
 | Frontend         | Backend            | Database     | Authentication | AI & APIs   |
 |------------------|--------------------|--------------|----------------|-------------|
-| Next.js + React  | Next.js API Routes | PostgreSQL + Prisma | NextAuth.js    | OpenAI API  |
+| Next.js + React  | Next.js API Routes | PostgreSQL + Prisma | NextAuth.js    | Playlab API  |
 
 ### Additional Tools:
 - 🎨 Tailwind CSS for responsive design
