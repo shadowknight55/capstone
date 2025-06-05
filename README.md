@@ -48,9 +48,9 @@ This platform aims to revolutionize mathematics education by offering:
 
 ## 🔧 Tech Stack
 
-| Frontend         | Backend            | Database | Authentication | AI & APIs   |
-|------------------|--------------------|----------|----------------|-------------|
-| Next.js + React  | Next.js API Routes | MongoDB  | NextAuth.js    | OpenAI API  |
+| Frontend         | Backend            | Database     | Authentication | AI & APIs   |
+|------------------|--------------------|--------------|----------------|-------------|
+| Next.js + React  | Next.js API Routes | PostgreSQL + Prisma | NextAuth.js    | OpenAI API  |
 
 ### Additional Tools:
 - 🎨 Tailwind CSS for responsive design
@@ -96,7 +96,7 @@ polypad/
 3. **Set up environment variables**
    Create a `.env.local` file in the root directory with the following variables:
    ```env
-   MONGODB_URI=your_mongodb_connection_string
+   DATABASE_URL=postgresql://USER:PASSWORD@HOST:PORT/DATABASE
    NEXTAUTH_SECRET=your_nextauth_secret
    NEXTAUTH_URL=http://localhost:3000
    GOOGLE_CLIENT_ID=your_google_client_id
@@ -119,7 +119,7 @@ polypad/
 
 | Variable | Description |
 |----------|-------------|
-| `MONGODB_URI` | MongoDB connection string |
+| `DATABASE_URL` | PostgreSQL connection string |
 | `NEXTAUTH_SECRET` | Secret key for NextAuth.js |
 | `NEXTAUTH_URL` | Base URL of your application |
 | `GOOGLE_CLIENT_ID` | Google OAuth client ID |
