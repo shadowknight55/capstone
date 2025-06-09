@@ -14,6 +14,7 @@ const handler = NextAuth({
           prompt: "consent",
           access_type: "offline",
           response_type: "code",
+          redirect_uri: "https://capstone-git-main-kareem-moores-projects.vercel.app/api/auth/callback/google"
         }
       },
     }),
