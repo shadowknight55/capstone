@@ -88,9 +88,9 @@ const handler = NextAuth({
         });
 
         if (!dbUser) {
-          // Get role from a temporary cookie instead of localStorage
-          const cookieStore = req.cookies;
-          const role = cookieStore.get('pendingRole')?.value || 'student';
+          // Default all new Google Sign-ups to student role.
+          // The previous method of reading a cookie was causing errors on Vercel.
+          const role = 'student';
 
           dbUser = await prisma.user.create({
             data: {
