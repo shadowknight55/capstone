@@ -102,7 +102,7 @@ export default function StudentLogin() {
    * Stores the pending role in localStorage for post-authentication handling
    */
   const handleGoogleSignIn = () => {
-    localStorage.setItem('pendingRole', 'student');
+    document.cookie = `pendingRole=student; path=/; max-age=60`; // Set cookie for 1 minute
     signIn('google', { callbackUrl: '/student/polypad' });
   };
 

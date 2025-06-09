@@ -9,6 +9,14 @@ const handler = NextAuth({
     GoogleProvider({
       clientId: process.env.GOOGLE_ID,
       clientSecret: process.env.GOOGLE_SECRET,
+      authorization: {
+        params: {
+          prompt: "consent",
+          access_type: "offline",
+          response_type: "code",
+          redirect_uri: "http://localhost:3000/api/auth/callback/google"
+        }
+      },
     }),
     CredentialsProvider({
       name: 'Credentials',
@@ -80,7 +88,7 @@ const handler = NextAuth({
       }
       return session;
     },
-    async signIn({ user, account, profile }) {
+    async signIn({ user, account, profile, req }) {
       // Only for Google sign-in
       if (account?.provider === 'google') {
         let dbUser = await prisma.user.findUnique({
@@ -88,15 +96,9 @@ const handler = NextAuth({
         });
 
         if (!dbUser) {
-          // Get role from localStorage via query param (not available server-side), fallback to 'student'
-          let role = 'student';
-          if (typeof window !== 'undefined') {
-            role = localStorage.getItem('pendingRole') || 'student';
-            localStorage.removeItem('pendingRole');
-          } else if (profile?.hd === 'teacher.com') {
-            // Optionally, use Google domain for teachers
-            role = 'teacher';
-          }
+          // Get role from a temporary cookie instead of localStorage
+          const cookieStore = req.cookies;
+          const role = cookieStore.get('pendingRole')?.value || 'student';
 
           dbUser = await prisma.user.create({
             data: {

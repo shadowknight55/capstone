@@ -67,6 +67,7 @@ export const config = {
     '/api/teacher/:path*',
     '/api/student/:path*',
     '/api/admin/:path*',
-    '/admin/:path*'
+    '/admin/:path*',
+    '/api/auth/callback/google'
   ]
 }; 

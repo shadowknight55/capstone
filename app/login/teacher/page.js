@@ -144,7 +144,7 @@ export default function TeacherLogin() {
    * Redirects to teacher dashboard on successful authentication
    */
   const handleGoogleSignIn = () => {
-    localStorage.setItem('pendingRole', 'teacher');
+    document.cookie = `pendingRole=teacher; path=/; max-age=60`; // Set cookie for 1 minute
     signIn('google', { callbackUrl: '/teacher/dashboard' });
   };
 
