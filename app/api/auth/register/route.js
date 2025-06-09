@@ -4,15 +4,14 @@ import prisma from '@/lib/prisma';
 
 // List of approved teacher email domains
 const APPROVED_TEACHER_DOMAINS = [
-  'teacher.com',
-  'school.edu',
+  '@we-conduit.org',
   'gmail.com'  // Adding gmail.com temporarily for testing
 ];
 
 // List of admin emails who can approve teacher accounts
 const ADMIN_EMAILS = [
   'admin@school.edu',
-  'testadmin@gmail.com'  // Adding test admin email
+  '@we-conduit.org'  // Adding test admin email
 ];
 
 export async function POST(req) {
