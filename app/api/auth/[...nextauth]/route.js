@@ -14,7 +14,7 @@ const handler = NextAuth({
           prompt: "consent",
           access_type: "offline",
           response_type: "code",
-          redirect_uri: "https://capstone-six-tau.vercel.app/student/polypad"
+          redirect_uri: "https://capstone-six-tau.vercel.app/api/auth/callback/google"
         }
       },
     }),
