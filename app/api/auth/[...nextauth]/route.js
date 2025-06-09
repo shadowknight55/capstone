@@ -13,8 +13,7 @@ const handler = NextAuth({
         params: {
           prompt: "consent",
           access_type: "offline",
-          response_type: "code",
-          redirect_uri: "https://capstone-six-tau.vercel.app/api/auth/callback/google"
+          response_type: "code"
         }
       },
     }),
