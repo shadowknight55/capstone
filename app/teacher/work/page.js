@@ -2,6 +2,7 @@
 import { useEffect, useState, useMemo } from 'react';
 import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 export default function TeacherWorkPage() {
   const { data: session, status } = useSession();
@@ -138,11 +139,13 @@ export default function TeacherWorkPage() {
                         <div className="text-green-700 mb-2">{item.description}</div>
                       )}
                       {item.screenshot && (
-                        <img
+                        <Image
                           src={item.screenshot}
                           alt={item.title || 'Student Work'}
+                          width={180}
+                          height={120}
                           className="w-full max-w-[180px] rounded border mb-2 cursor-pointer hover:shadow-lg transition"
-                          style={{ maxHeight: 120, objectFit: 'contain' }}
+                          style={{ objectFit: 'contain' }}
                           onClick={() => setModalImage(item.screenshot)}
                         />
                       )}
@@ -173,7 +176,13 @@ export default function TeacherWorkPage() {
             >
               &times;
             </button>
-            <img src={modalImage} alt="Full Size Work" className="w-full max-w-xl rounded border" style={{ maxHeight: '70vh', objectFit: 'contain' }} />
+            <Image 
+              src={modalImage} 
+              alt="Full Size Work" 
+              width={800} 
+              height={600} 
+              className="w-full max-w-xl rounded border" 
+              style={{ objectFit: 'contain' }} />
           </div>
         </div>
       )}

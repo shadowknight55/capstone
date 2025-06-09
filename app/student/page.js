@@ -6,11 +6,12 @@
 
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import AIChatbot from '../components/AIChatbot';
+import Image from 'next/image';
 
 function LoadingScreen({ message = "Loading..." }) {
   return (
@@ -58,7 +59,7 @@ export default function StudentHome() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [workToDelete, setWorkToDelete] = useState(null);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     if (!session?.user?.id) return;
     
     setLoading(true);
@@ -76,7 +77,7 @@ export default function StudentHome() {
       console.error('Error fetching data:', error);
     }
     setLoading(false);
-  };
+  }, [session]);
 
   useEffect(() => {
     if (status === 'loading') return;
@@ -90,7 +91,7 @@ export default function StudentHome() {
     }
 
     fetchData();
-  }, [session, status, router]);
+  }, [session, status, router, fetchData]);
 
   const handleDeleteWork = async (workId) => {
     if (!workId || !session?.user?.id) return;
@@ -237,7 +238,7 @@ export default function StudentHome() {
           <div className="bg-white rounded-xl p-6 max-w-md w-full">
             <h2 className="text-xl font-semibold mb-4">Delete Work</h2>
             <p className="text-gray-700 mb-6">
-              Are you sure you want to delete "{workToDelete.title}"? This action cannot be undone.
+              Are you sure you want to delete &quot;{workToDelete.title}&quot;? This action cannot be undone.
             </p>
             <div className="flex justify-end gap-3">
               <button
@@ -277,11 +278,13 @@ export default function StudentHome() {
             {selectedWork.description && (
               <p className="mb-2 text-gray-700">{selectedWork.description}</p>
             )}
-            <img
+            <Image
               src={selectedWork.screenshot}
               alt={selectedWork.title}
+              width={500}
+              height={400}
               className="w-full rounded border mb-2"
-              style={{ maxHeight: 400, objectFit: 'contain' }}
+              style={{ objectFit: 'contain' }}
             />
             <div className="text-xs text-gray-500">
               Saved on {new Date(selectedWork.createdAt).toLocaleString()}

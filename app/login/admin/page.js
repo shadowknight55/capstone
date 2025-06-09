@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 function LoadingScreen({ message = "Loading..." }) {
   return (
@@ -90,9 +91,9 @@ export default function AdminLogin() {
         </form>
 
         <div className="mt-6 text-center">
-          <a href="/" className="text-sm text-purple-600 hover:text-purple-500">
+          <Link href="/" className="text-sm text-purple-600 hover:text-purple-500">
             Back to Home
-          </a>
+          </Link>
         </div>
       </div>
     </div>
