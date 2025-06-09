@@ -133,9 +133,9 @@ export default function TeacherWorkPage() {
                 <ul className="divide-y divide-gray-200">
                   {(studentWorkMap[selectedStudentId] || []).map(item => (
                     <li key={item.id || item._id} className="py-4">
-                      <div className="font-bold text-lg text-gray-900 mb-1">{item.title || '[No Title]'}</div>
+                      <div className="font-bold text-lg text-green-900 mb-1">{item.title || '[No Title]'}</div>
                       {item.description && (
-                        <div className="text-gray-700 mb-2">{item.description}</div>
+                        <div className="text-green-700 mb-2">{item.description}</div>
                       )}
                       {item.screenshot && (
                         <img
@@ -147,19 +147,19 @@ export default function TeacherWorkPage() {
                         />
                       )}
                       {!item.title && !item.description && !item.screenshot && (
-                        <div className="text-gray-500">[No content]</div>
+                        <div className="text-green-500">[No content]</div>
                       )}
-                      <div className="text-xs text-gray-400 mt-2">Submitted: {item.createdAt ? new Date(item.createdAt).toLocaleString() : 'Unknown'}</div>
+                      <div className="text-xs text-green-400 mt-2">Submitted: {item.createdAt ? new Date(item.createdAt).toLocaleString() : 'Unknown'}</div>
                     </li>
                   ))}
                 </ul>
               ) : (
-                <div className="text-gray-500">Select a student to view their submissions.</div>
+                <div className="text-green-700">Select a student to view their submissions.</div>
               )}
             </div>
           </div>
         ) : selectedCohort ? (
-          <div>No work submitted for this cohort yet.</div>
+          <div className="text-green-700">No work submitted for this cohort yet.</div>
         ) : null}
       </div>
       {/* Screenshot Modal */}

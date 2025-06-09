@@ -42,8 +42,8 @@ export default function TeacherStudentsPage() {
         </div>
         <ul className="divide-y divide-gray-200">
           {students.map(student => (
-            <li key={student.id} className="py-2 flex items-center justify-between">
-              <span>{student.name} <span className="text-xs text-gray-500">({student.email})</span></span>
+            <li key={student.id} className="py-2 flex items-center justify-between text-gray-800">
+              <span>{student.name} <span className="text-xs text-gray-600">({student.email})</span></span>
             </li>
           ))}
         </ul>
@@ -51,3 +51,4 @@ export default function TeacherStudentsPage() {
     </div>
   );
 } 
+
