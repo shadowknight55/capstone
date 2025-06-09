@@ -5,7 +5,7 @@ import bcrypt from 'bcryptjs';
 
 const ADMIN_EMAILS = [
   'admin@school.edu',
-  'testadmin@gmail.com',
+  'amy@we-conduit.org',
 ];
 
 export async function GET(req) {

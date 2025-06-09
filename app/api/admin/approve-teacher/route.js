@@ -5,7 +5,7 @@ import prisma from '@/lib/prisma';
 // List of admin emails who can approve teacher accounts
 const ADMIN_EMAILS = [
   'admin@school.edu',
-  'testadmin@gmail.com',  // Added test admin email
+  'amy@we-conduit.org',  
   // Add your admin emails here
 ];
 

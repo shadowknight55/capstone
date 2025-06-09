@@ -11,7 +11,7 @@ const APPROVED_TEACHER_DOMAINS = [
 // List of admin emails who can approve teacher accounts
 const ADMIN_EMAILS = [
   'admin@school.edu',
-  '@we-conduit.org'  // Adding test admin email
+  'amy@we-conduit.org'  // Adding test admin email
 ];
 
 export async function POST(req) {
