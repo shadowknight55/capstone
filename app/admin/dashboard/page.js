@@ -24,20 +24,21 @@ function PasswordResetModal({ open, onClose, onSubmit, user }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
       <div className="bg-white rounded-lg shadow-lg p-6 min-w-[300px] max-w-md">
-        <h3 className="font-bold text-lg mb-2">Reset Password for {user.name} ({user.email})</h3>
+        <h3 className="font-bold text-lg mb-4 text-gray-800">Reset Password for {user.name} ({user.email})</h3>
+        <label className="block text-sm font-medium text-gray-700 mb-1">New Password</label>
         <input
           type="password"
-          className="w-full border rounded px-3 py-2 mb-2"
-          placeholder="New password"
+          className="w-full border rounded px-3 py-2 mb-2 bg-white text-gray-800 border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500"
+          placeholder="Enter new password"
           value={newPassword}
           onChange={e => setNewPassword(e.target.value)}
         />
         {error && <div className="text-red-600 text-sm mb-2">{error}</div>}
-        <div className="flex gap-2 justify-end">
-          <button className="px-4 py-2 bg-gray-200 rounded" onClick={onClose}>Cancel</button>
+        <div className="flex gap-2 justify-end mt-4">
+          <button className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300" onClick={onClose}>Cancel</button>
           <button
-            className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700"
-            disabled={loading}
+            className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 disabled:opacity-50"
+            disabled={loading || !newPassword}
             onClick={async () => {
               setLoading(true);
               setError('');

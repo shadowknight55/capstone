@@ -138,16 +138,6 @@ export default function TeacherLogin() {
     }
   };
 
-  /**
-   * Initiates Google OAuth sign-in process for teachers
-   * Stores the pending role in localStorage for post-authentication handling
-   * Redirects to teacher dashboard on successful authentication
-   */
-  const handleGoogleSignIn = () => {
-    document.cookie = `pendingRole=teacher; path=/; max-age=60`; // Set cookie for 1 minute
-    signIn('google', { callbackUrl: '/teacher/dashboard' });
-  };
-
   if (loading) return <LoadingScreen message="Processing..." />;
 
   return (
@@ -207,27 +197,6 @@ export default function TeacherLogin() {
             {isLogin ? 'Sign In to LearnPad' : 'Create LearnPad Account'}
           </button>
         </form>
-        <div className="flex items-center my-6">
-          <div className="flex-grow border-t border-gray-300"></div>
-          <span className="mx-4 text-gray-500">Or continue with</span>
-          <div className="flex-grow border-t border-gray-300"></div>
-        </div>
-        <button
-          type="button"
-          onClick={handleGoogleSignIn}
-          className="w-full flex items-center justify-center gap-3 px-4 py-2 border border-gray-300 rounded-md shadow-sm text-base font-medium text-gray-700 bg-white hover:bg-gray-100 transition"
-          style={{ minHeight: 44 }}
-        >
-          <Image
-            src="/google.svg"
-            alt="Google logo"
-            width={24}
-            height={24}
-            className="inline-block"
-            style={{ minWidth: 24 }}
-          />
-          <span>Sign in with Google</span>
-        </button>
         <div className="mt-6 text-center">
           <button
             onClick={() => setIsLogin(!isLogin)}

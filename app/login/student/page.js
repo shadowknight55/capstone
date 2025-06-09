@@ -58,50 +58,14 @@ function LoadingScreen({ message = "Loading..." }) {
  * @returns {JSX.Element} A form component for student authentication
  */
 export default function StudentLogin() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
-  const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
-
-  /**
-   * Handles form submission for both login and registration
-   * @async
-   * @param {Event} e - Form submission event
-   * @returns {Promise<void>}
-   */
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    if (isLogin) {
-      const result = await signIn('credentials', {
-        email,
-        password,
-        redirect: false,
-      });
-      setLoading(false);
-      if (result?.ok) {
-        window.location.href = '/student/polypad';
-      }
-    } else {
-      const res = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, password, role: 'student' }),
-      });
-      setLoading(false);
-      if (res.ok) {
-        setIsLogin(true);
-      }
-    }
-  };
 
   /**
    * Initiates Google OAuth sign-in process
    * Stores the pending role in localStorage for post-authentication handling
    */
   const handleGoogleSignIn = () => {
+    setLoading(true);
     document.cookie = `pendingRole=student; path=/; max-age=60`; // Set cookie for 1 minute
     signIn('google', { callbackUrl: '/student/polypad' });
   };
@@ -115,76 +79,25 @@ export default function StudentLogin() {
           <h1 className="text-3xl font-bold text-teal-700 mb-2">LearnPad</h1>
           <h2 className="text-2xl font-bold text-teal-700">Student Portal</h2>
         </div>
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {!isLogin && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Full Name</label>
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 text-gray-800 placeholder-gray-400"
-                placeholder="Enter your full name"
-                required
-              />
-            </div>
-          )}
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Email Address</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 text-gray-800 placeholder-gray-400"
-              placeholder="Enter your email"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Password</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 text-gray-800 placeholder-gray-400"
-              placeholder="Enter your password"
-              required
-            />
-          </div>
+        <div className="space-y-6">
+          <p className="text-center text-gray-600">
+            Please sign in with your school-provided Google account to continue.
+          </p>
           <button
-            type="submit"
-            className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
+            type="button"
+            onClick={handleGoogleSignIn}
+            className="w-full flex items-center justify-center gap-3 px-4 py-2 border border-gray-300 rounded-md shadow-sm text-base font-medium text-gray-700 bg-white hover:bg-gray-100 transition"
+            style={{ minHeight: 44 }}
           >
-            {isLogin ? 'Sign In to LearnPad' : 'Create LearnPad Account'}
-          </button>
-        </form>
-        <div className="flex items-center my-6">
-          <div className="flex-grow border-t border-gray-300"></div>
-          <span className="mx-4 text-gray-500">Or continue with</span>
-          <div className="flex-grow border-t border-gray-300"></div>
-        </div>
-        <button
-          type="button"
-          onClick={handleGoogleSignIn}
-          className="w-full flex items-center justify-center gap-3 px-4 py-2 border border-gray-300 rounded-md shadow-sm text-base font-medium text-gray-700 bg-white hover:bg-gray-100 transition"
-          style={{ minHeight: 44 }}
-        >
-          <Image
-            src="/google.svg"
-            alt="Google logo"
-            width={24}
-            height={24}
-            className="inline-block"
-            style={{ minWidth: 24 }}
-          />
-          <span>Sign in with Google</span>
-        </button>
-        <div className="mt-6 text-center">
-          <button
-            onClick={() => setIsLogin(!isLogin)}
-            className="text-sm text-teal-600 hover:text-teal-500"
-          >
-            {isLogin ? "Don't have an account? Sign up" : 'Already have an account? Sign in'}
+            <Image
+              src="/google.svg"
+              alt="Google logo"
+              width={24}
+              height={24}
+              className="inline-block"
+              style={{ minWidth: 24 }}
+            />
+            <span>Sign in with Google</span>
           </button>
         </div>
       </div>
