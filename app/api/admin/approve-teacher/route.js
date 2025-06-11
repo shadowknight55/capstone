@@ -69,14 +69,9 @@ export async function POST(req) {
         message: 'Teacher account approved successfully'
       });
     } else {
-      // Reject the teacher
-      await prisma.pendingTeacher.update({
+      // Reject and delete the teacher's pending request
+      await prisma.pendingTeacher.delete({
         where: { id: pendingTeacher.id },
-        data: { 
-          status: 'rejected',
-          rejectedBy: token.email,
-          rejectedAt: new Date()
-        }
       });
 
       // TODO: Send rejection email to teacher

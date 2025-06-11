@@ -38,7 +38,7 @@ model Cohort {
 
   // Relations
   students  User[]   @relation("CohortStudents")
-  teacher   User?    @relation("CohortTeacher", fields: [teacherId], references: [id])
+  teacher   User?    @relation("CohortTeacher", fields: [teacherId], references: [id], onDelete: SetNull)
   teacherId Int?
   work      SavedWork[]
 }
@@ -52,7 +52,7 @@ model SavedWork {
   updatedAt   DateTime @updatedAt
 
   // Relations
-  student     User     @relation(fields: [studentId], references: [id])
+  student     User     @relation(fields: [studentId], references: [id], onDelete: Cascade)
   studentId   Int
   cohort      Cohort?  @relation(fields: [cohortId], references: [id])
   cohortId    Int?
