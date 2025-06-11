@@ -4,8 +4,7 @@ import prisma from '@/lib/prisma';
 
 // List of approved teacher email domains
 const APPROVED_TEACHER_DOMAINS = [
-  '@we-conduit.org',
-  'gmail.com'  // Adding gmail.com temporarily for testing
+  'we-conduit.org'
 ];
 
 // List of admin emails who can approve teacher accounts
