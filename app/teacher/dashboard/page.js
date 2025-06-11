@@ -256,38 +256,34 @@ export default function TeacherDashboard() {
   if (status === 'loading' || loading) return <LoadingScreen message="Loading dashboard..." />;
 
   return (
-    <div className="min-h-screen bg-green-50">
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="flex justify-between items-center mb-8">
-          <div className="flex items-center gap-4">
-            <Image
-              src="/conduit-logo.png"
-              alt="Conduit Logo"
-              width={150}
-              height={30}
-              className="text-transparent"
-            />
-            <div>
-              <h1 className="text-3xl font-bold text-green-700 mb-2">LearnPad</h1>
-              <h2 className="text-xl text-green-600">Teacher Dashboard</h2>
-            </div>
-          </div>
-          <button
-            onClick={() => signOut({ callbackUrl: '/' })}
-            className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
-          >Sign Out</button>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-100 via-green-50 to-white">
+      <div className="max-w-lg w-full bg-white rounded-2xl shadow-2xl p-10 flex flex-col items-center">
+        <div className="flex items-center gap-4 mb-4">
+          <Image
+            src="/conduit-logo.png"
+            alt="Conduit Logo"
+            width={150}
+            height={30}
+            className="text-transparent"
+          />
+          <h1 className="text-4xl font-extrabold text-green-700">LearnPad</h1>
         </div>
+        <p className="text-lg text-gray-600 mb-8 text-center">Welcome, {session?.user?.name}!</p>
         <div className="space-y-6 w-full mb-8">
           <button className="w-full flex items-center gap-3 px-4 py-4 text-xl bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-semibold justify-center" onClick={() => router.push('/teacher/students')}>
-            <UsersIcon className="h-7 w-7" /> View Students
+            <UsersIcon className="h-6 w-6" />
+            View Students
           </button>
           <button className="w-full flex items-center gap-3 px-4 py-4 text-xl bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-semibold justify-center" onClick={() => router.push('/teacher/cohorts')}>
-            <UserGroupIcon className="h-7 w-7" /> Manage Cohorts
+            <UserGroupIcon className="h-6 w-6" />
+            Manage Cohorts
           </button>
           <button className="w-full flex items-center gap-3 px-4 py-4 text-xl bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-semibold justify-center" onClick={() => router.push('/teacher/work')}>
-            <ClipboardDocumentListIcon className="h-7 w-7" /> Student Submissions
+            <ClipboardDocumentListIcon className="h-6 w-6" />
+            Student Submissions
           </button>
         </div>
+        <button onClick={() => signOut({ callbackUrl: '/' })} className="mt-6 px-4 py-2 bg-gray-200 text-green-700 rounded-lg hover:bg-gray-300 transition w-full">Sign Out</button>
       </div>
     </div>
   );
