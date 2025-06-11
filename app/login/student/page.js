@@ -83,21 +83,21 @@ export default function StudentLogin() {
           <p className="text-center text-gray-600">
             Please sign in with your school-provided Google account to continue.
           </p>
-          <button
-            type="button"
-            onClick={handleGoogleSignIn}
-            className="w-full flex items-center justify-center gap-3 px-4 py-2 border border-gray-300 rounded-md shadow-sm text-base font-medium text-gray-700 bg-white hover:bg-gray-100 transition"
-            style={{ minHeight: 44 }}
-          >
-            <Image
-              src="/google.svg"
-              alt="Google logo"
-              width={24}
-              height={24}
-              className="inline-block"
-              style={{ minWidth: 24 }}
-            />
-            <span>Sign in with Google</span>
+        <button
+          type="button"
+          onClick={handleGoogleSignIn}
+          className="w-full flex items-center justify-center gap-3 px-4 py-2 border border-gray-300 rounded-md shadow-sm text-base font-medium text-gray-700 bg-white hover:bg-gray-100 transition"
+          style={{ minHeight: 44 }}
+        >
+          <Image
+            src="/google.svg"
+            alt="Google logo"
+            width={24}
+            height={24}
+            className="inline-block"
+            style={{ minWidth: 24 }}
+          />
+          <span>Sign in with Google</span>
           </button>
         </div>
       </div>

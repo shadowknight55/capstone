@@ -30,6 +30,13 @@ export default function Home() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-teal-50 to-white">
       <div className="text-center mb-12">
+        <Image 
+          src="/conduit-logo.png"
+          alt="Conduit Logo"
+          width={250}
+          height={50}
+          className="mx-auto mb-4"
+        />
         <h1 className="text-5xl font-bold mb-4 text-teal-700">Welcome to LearnPad</h1>
         <p className="text-xl text-gray-600">Interactive Learning Platform</p>
       </div>

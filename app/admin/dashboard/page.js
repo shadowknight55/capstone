@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 function LoadingScreen({ message = "Loading..." }) {
   return (
@@ -161,9 +162,17 @@ export default function AdminDashboard() {
     <div className="min-h-screen bg-purple-50">
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-purple-700 mb-2">LearnPad</h1>
-            <h2 className="text-xl text-purple-600">Admin Dashboard</h2>
+          <div className="flex items-center gap-4">
+            <Image
+              src="/conduit-logo.png"
+              alt="Conduit Logo"
+              width={150}
+              height={30}
+            />
+            <div>
+              <h1 className="text-3xl font-bold text-purple-700 mb-2">LearnPad</h1>
+              <h2 className="text-xl text-purple-600">Admin Dashboard</h2>
+            </div>
           </div>
           <button
             onClick={() => signOut({ callbackUrl: '/' })}
