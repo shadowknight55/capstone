@@ -35,7 +35,7 @@ export default function Home() {
           alt="Conduit Logo"
           width={250}
           height={50}
-          className="mx-auto mb-4"
+          className="mx-auto mb-4 text-transparent"
         />
         <h1 className="text-5xl font-bold mb-4 text-teal-700">Welcome to LearnPad</h1>
         <p className="text-xl text-gray-600">Interactive Learning Platform</p>

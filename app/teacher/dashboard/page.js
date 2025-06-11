@@ -265,6 +265,7 @@ export default function TeacherDashboard() {
               alt="Conduit Logo"
               width={150}
               height={30}
+              className="text-transparent"
             />
             <div>
               <h1 className="text-3xl font-bold text-green-700 mb-2">LearnPad</h1>
