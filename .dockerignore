@@ -1,0 +1,17 @@
+# Ignore node_modules. It will be installed in the container.
+node_modules
+
+# Ignore local environment files. These will be passed in during runtime.
+.env
+.env.local
+
+# Ignore Next.js build folder. This is generated inside the container.
+.next
+
+# Ignore Docker files.
+Dockerfile
+.dockerignore
+
+# Ignore version control files.
+.git
+.gitignore 

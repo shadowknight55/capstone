@@ -51,7 +51,7 @@ AI is used to provide instant feedback and assistance to students, helping them 
 - **Authentication:** NextAuth.js (with Google and credentials)
 - **AI Services:** Playlab API
 - **Math Workspace:** Polypad API
-- **Deployment:** Vercel
+- **Deployment:** Digtal ocean
 - **Other Tools:** Prisma, bcryptjs, Trello (project management)
 
 ---
