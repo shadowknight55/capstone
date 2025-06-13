@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server';
 // List of admin emails who can access admin routes
 const ADMIN_EMAILS = [
   'admin@school.edu',
-  'testadmin@gmail.com'  // Adding test admin email
+  'amy@we-conduit.org'
 ];
 
 export async function middleware(req) {
