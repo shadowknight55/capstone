@@ -1,11 +1,6 @@
 import { getToken } from 'next-auth/jwt';
 import { NextResponse } from 'next/server';
 
-// List of admin emails who can access admin routes
-const ADMIN_EMAILS = [
-  'admin@school.edu',
-  'amy@we-conduit.org'
-];
 
 export async function middleware(req) {
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });

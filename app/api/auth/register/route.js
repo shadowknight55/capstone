@@ -7,11 +7,6 @@ const APPROVED_TEACHER_DOMAINS = [
   'we-conduit.org'
 ];
 
-// List of admin emails who can approve teacher accounts
-const ADMIN_EMAILS = [
-  'admin@school.edu',
-  'amy@we-conduit.org'  // Adding test admin email
-];
 
 export async function POST(req) {
   try {
@@ -44,27 +39,7 @@ export async function POST(req) {
       );
     }
 
-    // Special handling for admin registration
-    if (role === 'admin' && email === 'testadmin@gmail.com') {
-      const hashedPassword = await bcrypt.hash(password, 12);
-      const user = await prisma.user.create({
-        data: {
-          name,
-          email,
-          password: hashedPassword,
-          role: 'admin',
-          status: 'active',
-          emailVerified: true,
-          provider: 'credentials',
-        }
-      });
-
-      return NextResponse.json(
-        { message: 'Admin account created successfully', userId: user.id },
-        { status: 201 }
-      );
-    }
-
+    
     // Special handling for teacher registration
     if (role === 'teacher') {
       // Extract domain from email
