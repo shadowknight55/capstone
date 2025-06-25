@@ -228,12 +228,6 @@ export default function TeacherCohortsPage() {
           <div className="mt-6 bg-gray-50 rounded-lg p-4">
             <div className="flex justify-between items-center mb-2">
               <h2 className="text-lg font-semibold text-gray-800">Cohort: {selectedCohort.name}</h2>
-              <button
-                className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
-                onClick={() => setShowAddStudentModal(true)}
-              >
-                Add Student
-              </button>
             </div>
             <ul className="divide-y divide-gray-200">
               {(selectedCohort?.students || []).length === 0 && (
