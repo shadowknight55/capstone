@@ -94,6 +94,7 @@ export default function AIChatbot() {
   }, [messages]);
 
 
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!input.trim() || !conversationId) return;
@@ -110,7 +111,7 @@ export default function AIChatbot() {
         body: JSON.stringify({
           action: 'send',
           conversationId,
-          message: userMessage  // Send only the user's message without any additional context
+          message: userMessage
         })
       });
 
@@ -118,40 +119,8 @@ export default function AIChatbot() {
         throw new Error('Failed to send message');
       }
 
-      // Handle streaming response
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder();
-      let assistantMessage = { role: 'assistant', content: '' };
-      let accumulatedContent = '';
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        const chunk = decoder.decode(value);
-        try {
-          const data = JSON.parse(chunk);
-          accumulatedContent += data.content;
-          
-          assistantMessage = {
-            role: data.role || 'assistant',
-            content: accumulatedContent
-          };
-          
-          setMessages(prev => {
-            const newMessages = [...prev];
-            const lastMessage = newMessages[newMessages.length - 1];
-            if (lastMessage.role === 'assistant') {
-              lastMessage.content = accumulatedContent;
-              return newMessages;
-            } else {
-              return [...newMessages, assistantMessage];
-            }
-          });
-        } catch (error) {
-          console.error('Error parsing chunk:', error);
-        }
-      }
+      const data = await response.json();
+      setMessages(prev => [...prev, { role: data.role || 'assistant', content: data.content }]);
     } catch (error) {
       console.error('Error sending message:', error);
       setMessages(prev => [...prev, { 
@@ -197,24 +166,33 @@ export default function AIChatbot() {
 
           {/* Messages */}
           <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gradient-to-b from-purple-50 to-pink-50">
-            {messages.map((message, index) => (
-              <div
-                key={index}
-                className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
-              >
+            {messages
+              .filter(
+                (message) =>
+                  message.content &&
+                  !message.content.includes('### Your Core Knowledge Base:') &&
+                  !message.content.includes('### System Rules') &&
+                  !message.content.includes('You are PolyPal Bot') &&
+                  !message.content.includes('Always assist with care, respect, and truth.')
+              )
+              .map((message, index) => (
                 <div
-                  className={`max-w-[85%] rounded-2xl p-3 shadow-sm ${
-                    message.role === 'user'
-                      ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white'
-                      : 'bg-white text-gray-800 border-2 border-purple-100'
-                  }`}
+                  key={index}
+                  className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
-                  <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">
-                    {message.content}
-                  </p>
+                  <div
+                    className={`max-w-[85%] rounded-2xl p-3 shadow-sm ${
+                      message.role === 'user'
+                        ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white'
+                        : 'bg-white text-gray-800 border-2 border-purple-100'
+                    }`}
+                  >
+                    <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">
+                      {message.content}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
             {isLoading && (
               <div className="flex justify-start">
                 <div className="bg-white text-gray-800 rounded-2xl p-3 border-2 border-purple-100 shadow-sm">

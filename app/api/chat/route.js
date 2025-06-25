@@ -35,34 +35,11 @@ export async function POST(request) {
 
       case 'send': {
         try {
-          // Create a TransformStream to handle the streaming response
-          const encoder = new TextEncoder();
-          const stream = new TransformStream();
-          const writer = stream.writable.getWriter();
-
-          // Start the message stream in the background
-          sendMessage(conversationId, message)
-            .then(async (response) => {
-              try {
-                await writer.write(encoder.encode(JSON.stringify(response)));
-                await writer.close();
-              } catch (error) {
-                console.error('Error writing to stream:', error);
-                await writer.abort(error);
-              }
-            })
-            .catch(async (error) => {
-              console.error('Error in message stream:', error);
-              await writer.abort(error);
-            });
-
-          // Return the stream as the response
-          return new Response(stream.readable, {
-            headers: {
-              'Content-Type': 'application/json',
-              'Transfer-Encoding': 'chunked'
-            }
+          let fullContent = "";
+          await sendMessage(conversationId, message, (delta) => {
+            fullContent += delta;
           });
+          return Response.json({ content: fullContent });
         } catch (error) {
           console.error('Error sending message:', error);
           return Response.json(
